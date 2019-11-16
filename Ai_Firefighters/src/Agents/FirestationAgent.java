@@ -24,7 +24,8 @@ public class FirestationAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 	private HashMap<String, ArrayList<ACLMessage>> firesToProcess;
 	private int numberOfVehicles;
-	
+	//private ArrayList<WaterSource> waterSources; //perguntar ao worldmap onde estao as watersources
+	//private ArrayList<FuelSource> fuelSources; //perguntar ao worldmap onde estao as fuelsources
 	protected void setup() {
 		this.firesToProcess = new HashMap<String, ArrayList<ACLMessage>>();
 		this.numberOfVehicles = 0;
