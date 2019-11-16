@@ -1,9 +1,5 @@
 package Agents;
 
-import java.util.UUID;
-
-import javax.security.auth.login.Configuration;
-
 import Config.Configurations;
 import Messages.FireMessage;
 import Messages.OrderMessage;
@@ -25,8 +21,6 @@ public class Vehicles_firetruckAgent extends Agent {
 	private boolean isAvailable = true;
 	private int coordX = 50;
 	private int coordY = 50;
-	private int fireStationCoordX = 50;
-	private int fireStationCoordY = 50;
 	private int waterTank = Configurations.FIRE_TRUCK_MAX_WATER_TANK_CAPACITY;
 	private int fuelTank = Configurations.FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY;
 
@@ -102,7 +96,7 @@ public class Vehicles_firetruckAgent extends Agent {
 						System.out.println("Get status msg received in vehicle. "
 								+ "Coords of corresponding fire: X: "
 								+ "" + fm.getFireCoordX() + " Y: " + fm.getFireCoordY());
-						StatusMessage sm = new StatusMessage(coordX, coordY, fm.getFireCoordX(), fm.getFireCoordY(), fm.getFireId(), isAvailable);
+						StatusMessage sm = new StatusMessage(coordX, coordY, fm.getFireCoordX(), fm.getFireCoordY(), fm.getFireId(), isAvailable, fuelTank, waterTank);
 						ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
 						reply.setContentObject(sm);
 						reply.addReceiver(msg.getSender());

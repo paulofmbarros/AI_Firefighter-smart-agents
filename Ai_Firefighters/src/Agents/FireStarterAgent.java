@@ -28,6 +28,11 @@ public class FireStarterAgent  extends Agent{
 	
 	class StartAFire extends OneShotBehaviour {
 		
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		StartAFire(Agent a) {
 			super(a);
 		}
