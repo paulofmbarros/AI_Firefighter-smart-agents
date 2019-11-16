@@ -94,11 +94,9 @@ public class Vehicles_firetruckAgent extends Agent {
 				case (ACLMessage.REQUEST):
 					if(content instanceof FireMessage) {
 						FireMessage fm = (FireMessage) content;
-						System.out.println("Fire msg received in vehicle. X: " + fm.getFireCoordX() + " Y: " + fm.getFireCoordY());
-						//o veiculo deve:
-						//verificar se está ocupado
-						//verificar se tem combustivel para se mover para as coordenadas
-						//verificar se tem água suficiente para apagar o fogo
+						System.out.println("Get status msg received in vehicle. "
+								+ "Coords of corresponding fire: X: "
+								+ "" + fm.getFireCoordX() + " Y: " + fm.getFireCoordY());
 						StatusMessage sm = new StatusMessage(coordX, coordY, fm.getFireCoordX(), fm.getFireCoordY(), fm.getFireId(), isAvailable);
 						ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
 						reply.setContentObject(sm);

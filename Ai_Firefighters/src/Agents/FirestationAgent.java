@@ -123,6 +123,15 @@ public class FirestationAgent extends Agent {
 		}
 		@Override
 		public void action() {
+			//1: extrair os estados do veiculo a partir da lista de mensagens
+			//associada ao ID do fogo na hashtable
+			//2: criar uma lista de veiculos que NAO estao ocupados
+			//3: dessa lista, escolher o veiculo mais proximo (em tempo) do fogo
+			//3.1: se tem combustivel* e agua, o tempo e o de viagem ao fogo
+			//3.2: se tem combustivel* mas nao tem agua, o tempo é o tempo de viagem ao posto de agua mais proximo e daí, o tempo que chega ao fogo
+			//3.3: se não tem nem combustível nem água, o tempo é medido como a soma da viagem à bomba, ao posto de água, e do posto de água, ao fogo
+			//* : não ter combustível significa não ter combustível para viagar do sítio em que está até ao fogo e do fogo à bomba mais próxima.
+			//**: se não tiver água, não esquecer que o combustível é gasto também durante a viagem ao posto de água.
 			System.out.println("For fire id " + fireId + " I can choose from " + firesToProcess.get(fireId).size() + " vehicles");
 		}
 		
@@ -155,27 +164,10 @@ public class FirestationAgent extends Agent {
 						FireMessage fm = (FireMessage) content;
 						System.out.println("Fire msg received. Checking all vehicles...");
 						addBehaviour(new MessageAllVehicles(myAgent, fm));
-						/*
-						ACLMessage requestVehicleMsg = new ACLMessage(ACLMessage.REQUEST);
-						requestVehicleMsg.setContentObject(fm);
-						requestVehicleMsg.addReceiver(new AID("Firetruck1", AID.ISLOCALNAME));
-						send(requestVehicleMsg);
-						*/
 					}
 					else if(content instanceof StatusMessage) {
 						
 						StatusMessage sm = (StatusMessage) content;
-						/*System.out.println("Reply received from vehicle. Vehicle coords: " + sm.getCoordX() + ", " + sm.getCoordY());
-						if(sm.isAvailable()) {
-							//verificar combustivel e assim
-							//neste caso assumo que pode ir apagar o fogo
-							ACLMessage reply = new ACLMessage(ACLMessage.PROPOSE);
-							OrderMessage om = new OrderMessage(sm.getFireX(), sm.getFireY());
-							reply.setContentObject(om);
-							reply.addReceiver(msg.getSender());
-							send(reply);
-						}
-						*/
 						firesToProcess.get(sm.getFireId()).add(msg);
 						if(firesToProcess.get(sm.getFireId()).size() == numberOfVehicles) {
 							addBehaviour(new SendBestVehicle(myAgent, sm.getFireId()));
