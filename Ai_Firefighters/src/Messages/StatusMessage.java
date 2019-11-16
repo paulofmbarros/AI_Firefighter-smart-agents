@@ -8,13 +8,15 @@ public class StatusMessage implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 	private int coordX, coordY;
 	private int fireX, fireY;
+	private String fireId;
 	private boolean available;
 	
-	public StatusMessage(int x, int y, int fx, int fy, boolean available) {
+	public StatusMessage(int x, int y, int fx, int fy, String fireId, boolean available) {
 		this.coordX = x;
 		this.coordY = y;
 		this.fireX = fx;
 		this.fireY = fy;
+		this.fireId = fireId;
 		this.available = available;
 	}
 
@@ -60,6 +62,10 @@ public class StatusMessage implements java.io.Serializable {
 
 	public void setFireY(int fireY) {
 		this.fireY = fireY;
+	}
+
+	public String getFireId() {
+		return fireId;
 	}
 	
 	

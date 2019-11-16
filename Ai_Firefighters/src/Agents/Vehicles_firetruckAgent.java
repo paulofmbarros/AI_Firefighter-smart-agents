@@ -1,11 +1,17 @@
 package Agents;
 
-import Agents.VehiclesAgent.ReceiveMessages;
+import java.util.UUID;
+
 import Messages.FireMessage;
 import Messages.OrderMessage;
 import Messages.StatusMessage;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
+import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.SequentialBehaviour;
+import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 
 public class Vehicles_firetruckAgent extends Agent {
@@ -19,9 +25,48 @@ public class Vehicles_firetruckAgent extends Agent {
 	private int fireStationCoordX = 50;
 	private int fireStationCoordY = 50;
 
+
 	protected void setup() {
-		System.out.println("Vehicle started");
-		addBehaviour(new ReceiveMessages(this));
+		SequentialBehaviour sb = new SequentialBehaviour();
+		sb.addSubBehaviour(new RegisterInDF(this));
+		sb.addSubBehaviour(new ReceiveMessages(this));
+		addBehaviour(sb);
+		System.out.println("Vehicle agent started");
+	}
+	
+	class RegisterInDF extends OneShotBehaviour {
+
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public RegisterInDF(Agent a) {
+			super(a);
+		}
+
+		public void action() {
+
+			ServiceDescription sd = new ServiceDescription();
+			sd.setType("VEHICLE_AGENT");
+			sd.setName(getName());
+			sd.setOwnership("AI2019");
+			DFAgentDescription dfd = new DFAgentDescription();
+			dfd.setName(getAID());
+			dfd.addServices(sd);
+			try {
+				DFAgentDescription[] dfds = DFService.search(myAgent, dfd);
+				if (dfds.length > 0) {
+					DFService.deregister(myAgent, dfd);
+				}
+				DFService.register(myAgent, dfd);
+			} catch (Exception ex) {
+				System.out.println("Vehicle failed registering with DF! Shutting down...");
+				ex.printStackTrace();
+				doDelete();
+			}
+		}
 	}
 	
 	class ReceiveMessages extends CyclicBehaviour {
@@ -54,7 +99,7 @@ public class Vehicles_firetruckAgent extends Agent {
 						//verificar se está ocupado
 						//verificar se tem combustivel para se mover para as coordenadas
 						//verificar se tem água suficiente para apagar o fogo
-						StatusMessage sm = new StatusMessage(coordX, coordY, fm.getFireCoordX(), fm.getFireCoordY(), isAvailable);
+						StatusMessage sm = new StatusMessage(coordX, coordY, fm.getFireCoordX(), fm.getFireCoordY(), fm.getFireId(), isAvailable);
 						ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
 						reply.setContentObject(sm);
 						reply.addReceiver(msg.getSender());

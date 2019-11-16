@@ -71,6 +71,15 @@ public class MainContainer {
 
 		// Name of the Agent + Class Path of Agent's source Code
 		a.startAgentInPlatform("Firetruck1", "Agents.Vehicles_firetruckAgent");
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		a.startAgentInPlatform("FirestationAgent", "Agents.FirestationAgent");
 		a.startAgentInPlatform("FireStarterAgent", "Agents.FireStarterAgent");
 	}

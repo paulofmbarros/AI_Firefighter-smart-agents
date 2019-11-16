@@ -1,5 +1,7 @@
 package Messages;
 
+import java.util.UUID;
+
 public class FireMessage implements java.io.Serializable {
 
 	/**
@@ -7,6 +9,7 @@ public class FireMessage implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private int fireCoordX, fireCoordY;
+	private String fireId = UUID.randomUUID().toString();
 	
 	public FireMessage(int x, int y) {
 		this.fireCoordX = x;
@@ -32,6 +35,8 @@ public class FireMessage implements java.io.Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
-	
+
+	public String getFireId() {
+		return fireId;
+	}	
 }
