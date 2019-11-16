@@ -2,6 +2,9 @@ package Agents;
 
 import java.util.UUID;
 
+import javax.security.auth.login.Configuration;
+
+import Config.Configurations;
 import Messages.FireMessage;
 import Messages.OrderMessage;
 import Messages.StatusMessage;
@@ -24,6 +27,8 @@ public class Vehicles_firetruckAgent extends Agent {
 	private int coordY = 50;
 	private int fireStationCoordX = 50;
 	private int fireStationCoordY = 50;
+	private int waterTank = Configurations.FIRE_TRUCK_MAX_WATER_TANK_CAPACITY;
+	private int fuelTank = Configurations.FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY;
 
 
 	protected void setup() {
