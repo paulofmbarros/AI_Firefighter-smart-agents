@@ -74,7 +74,7 @@ public abstract class Configurations {
 	 */
 	public final static int FIRE_MAX_FINAL_INTENSITY = 10;
 
-	public static final int FIRE_TRUCK_SPEED_MULTIPLIER = 0;
+	public static final int FIRE_TRUCK_SPEED_MULTIPLIER = 1;
 	
 }
 
