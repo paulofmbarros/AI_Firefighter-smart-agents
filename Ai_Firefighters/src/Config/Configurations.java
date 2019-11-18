@@ -24,6 +24,11 @@ public abstract class Configurations {
 	 */
 	public static int NUM_MAX_FIRE_TRUCKS = 1;
 	
+	/**
+	 * Defines the default velocity (timeout in ms) in which the vehicle moves to a new coordinate
+	 */
+	public final static int BASE_VEHICLE_SPEED = 1000;
+	
 	
 	/**
 	 * Defines the maximum number of Fires that can occur/be presented in the World.
@@ -43,16 +48,17 @@ public abstract class Configurations {
 	/**
 	 * Defines the maximum water tank's capacity of a Fire Truck Agent.
 	 */
-	public final static int FIRE_TRUCK_MAX_WATER_TANK_CAPACITY = 9;
+	public final static int FIRE_TRUCK_MAX_WATER_TANK_CAPACITY = 10;
 	
 	/*
 	 * Fire truck max fuel tank capacity
 	 */
-	public final static int FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY = 50;
+	public final static int FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY = 100;
 	
 	/*
 	 * Fire truck velocity (timeout (ms) in which it moves to a new coordinate - less is faster)
 	 */
+<<<<<<< HEAD
 	public final static int FIRE_TRUCK_VELOCITY = 1000;
 	/**
 	 * Defines the maximum quantity of a Water Resource.
@@ -66,6 +72,9 @@ public abstract class Configurations {
 	 * Defines the maximum final intensity of a Fire.
 	 */
 	public final static int FIRE_MAX_FINAL_INTENSITY = 10;
+=======
+	public final static int FIRE_TRUCK_SPEED_MULTIPLIER = 1;
+>>>>>>> branch 'master' of https://github.com/Pugnatore/AI_Firefighter-smart-agents.git
 	
 }
 

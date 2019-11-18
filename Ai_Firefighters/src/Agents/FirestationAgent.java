@@ -14,6 +14,7 @@ import jade.lang.acl.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 
 public class FirestationAgent extends Agent {
@@ -23,11 +24,13 @@ public class FirestationAgent extends Agent {
 	 */
 	private static final long serialVersionUID = 1L;
 	private HashMap<String, ArrayList<ACLMessage>> firesToProcess;
+	private HashMap<String, FireMessage> fireObjects;
 	private int numberOfVehicles;
 	//private ArrayList<WaterSource> waterSources; //perguntar ao worldmap onde estao as watersources
 	//private ArrayList<FuelSource> fuelSources; //perguntar ao worldmap onde estao as fuelsources
 	protected void setup() {
 		this.firesToProcess = new HashMap<String, ArrayList<ACLMessage>>();
+		this.fireObjects = new HashMap<String, FireMessage>();
 		this.numberOfVehicles = 0;
 		SequentialBehaviour sb = new SequentialBehaviour();
 		sb.addSubBehaviour(new CountNumberOfVehicles(this));
@@ -132,6 +135,22 @@ public class FirestationAgent extends Agent {
 			//* : não ter combustível significa não ter combustível para viagar do sítio em que está até ao fogo e do fogo à bomba mais próxima.
 			//**: se não tiver água, não esquecer que o combustível é gasto também durante a viagem ao posto de água.
 			System.out.println("For fire id " + fireId + " I can choose from " + firesToProcess.get(fireId).size() + " vehicles");
+			ArrayList<StatusMessage> statuses = new ArrayList<StatusMessage>();
+			for(ACLMessage msg : firesToProcess.get(fireId)) {
+				try {
+					statuses.add((StatusMessage) msg.getContentObject());
+				} catch (UnreadableException e) {
+					e.printStackTrace();
+				}
+			}
+			//preciso de usar iterator para remover elementos do arraylist dentro do proprio loop
+			//isto vai dar jeito para filtrar veiculos nao disponiveis
+			Iterator<StatusMessage> i = statuses.iterator();
+			while (i.hasNext()) {
+			   StatusMessage msg = ((StatusMessage) i.next());
+			   // Do something
+			   System.out.println(msg.getVehicleName());
+			}
 		}
 		
 	}
@@ -162,6 +181,7 @@ public class FirestationAgent extends Agent {
 					if(content instanceof FireMessage) {
 						FireMessage fm = (FireMessage) content;
 						System.out.println("Fire msg received. Checking all vehicles...");
+						fireObjects.put(fm.getFireId(), fm);
 						addBehaviour(new MessageAllVehicles(myAgent, fm));
 					}
 					else if(content instanceof StatusMessage) {

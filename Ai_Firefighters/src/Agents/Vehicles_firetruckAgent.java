@@ -23,6 +23,7 @@ public class Vehicles_firetruckAgent extends Agent {
 	private int coordY = 50;
 	private int waterTank = Configurations.FIRE_TRUCK_MAX_WATER_TANK_CAPACITY;
 	private int fuelTank = Configurations.FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY;
+	private int speed = Configurations.BASE_VEHICLE_SPEED*Configurations.FIRE_TRUCK_SPEED_MULTIPLIER;
 
 
 	protected void setup() {
@@ -96,7 +97,7 @@ public class Vehicles_firetruckAgent extends Agent {
 						System.out.println("Get status msg received in vehicle. "
 								+ "Coords of corresponding fire: X: "
 								+ "" + fm.getFireCoordX() + " Y: " + fm.getFireCoordY());
-						StatusMessage sm = new StatusMessage(coordX, coordY, fm.getFireCoordX(), fm.getFireCoordY(), fm.getFireId(), isAvailable, fuelTank, waterTank);
+						StatusMessage sm = new StatusMessage(coordX, coordY, fm.getFireId(), myAgent.getAID(), isAvailable, fuelTank, waterTank);
 						ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
 						reply.setContentObject(sm);
 						reply.addReceiver(msg.getSender());
