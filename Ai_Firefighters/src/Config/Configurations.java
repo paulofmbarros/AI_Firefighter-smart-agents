@@ -1,7 +1,5 @@
 package Config;
 
-import jade.core.behaviours.SequentialBehaviour;
-
 public abstract class Configurations {
 	
 	public static int GRID_WIDTH = 100;
@@ -56,6 +54,18 @@ public abstract class Configurations {
 	 * Fire truck velocity (timeout (ms) in which it moves to a new coordinate - less is faster)
 	 */
 	public final static int FIRE_TRUCK_VELOCITY = 1000;
+	/**
+	 * Defines the maximum quantity of a Water Resource.
+	 */
+	public final static int WATER_RESOURCE_INITIAL_MAX_CAPACITY = 8;
+	/**
+	 * Defines the maximum initial intensity of a Fire.
+	 */
+	public final static int FIRE_MAX_INITIAL_INTENSITY = 6;
+	/**
+	 * Defines the maximum final intensity of a Fire.
+	 */
+	public final static int FIRE_MAX_FINAL_INTENSITY = 10;
 	
 }
 
