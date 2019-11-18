@@ -7,16 +7,13 @@ public class StatusMessage implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private int coordX, coordY;
-	private int fireX, fireY;
 	private int fuelTank, waterTank;
 	private String fireId;
 	private boolean available;
 	
-	public StatusMessage(int x, int y, int fx, int fy, String fireId, boolean available, int fuelTank, int waterTank) {
+	public StatusMessage(int x, int y, String fireId, boolean available, int fuelTank, int waterTank) {
 		this.coordX = x;
 		this.coordY = y;
-		this.fireX = fx;
-		this.fireY = fy;
 		this.fireId = fireId;
 		this.available = available;
 		this.setFuelTank(fuelTank);
@@ -49,22 +46,6 @@ public class StatusMessage implements java.io.Serializable {
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
-	}
-
-	public int getFireX() {
-		return fireX;
-	}
-
-	public void setFireX(int fireX) {
-		this.fireX = fireX;
-	}
-
-	public int getFireY() {
-		return fireY;
-	}
-
-	public void setFireY(int fireY) {
-		this.fireY = fireY;
 	}
 
 	public String getFireId() {
