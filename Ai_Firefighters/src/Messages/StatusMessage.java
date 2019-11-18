@@ -1,5 +1,7 @@
 package Messages;
 
+import jade.core.AID;
+
 public class StatusMessage implements java.io.Serializable {
 
 	/**
@@ -9,12 +11,14 @@ public class StatusMessage implements java.io.Serializable {
 	private int coordX, coordY;
 	private int fuelTank, waterTank;
 	private String fireId;
+	private AID vehicleName;
 	private boolean available;
 	
-	public StatusMessage(int x, int y, String fireId, boolean available, int fuelTank, int waterTank) {
+	public StatusMessage(int x, int y, String fireId, AID vehicleName, boolean available, int fuelTank, int waterTank) {
 		this.coordX = x;
 		this.coordY = y;
 		this.fireId = fireId;
+		this.vehicleName = vehicleName;
 		this.available = available;
 		this.setFuelTank(fuelTank);
 		this.setWaterTank(waterTank);
@@ -66,6 +70,10 @@ public class StatusMessage implements java.io.Serializable {
 
 	public void setWaterTank(int waterTank) {
 		this.waterTank = waterTank;
+	}
+
+	public AID getVehicleName() {
+		return vehicleName;
 	}
 	
 	

@@ -14,6 +14,7 @@ import jade.lang.acl.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 
 public class FirestationAgent extends Agent {
@@ -134,7 +135,22 @@ public class FirestationAgent extends Agent {
 			//* : não ter combustível significa não ter combustível para viagar do sítio em que está até ao fogo e do fogo à bomba mais próxima.
 			//**: se não tiver água, não esquecer que o combustível é gasto também durante a viagem ao posto de água.
 			System.out.println("For fire id " + fireId + " I can choose from " + firesToProcess.get(fireId).size() + " vehicles");
-			System.out.println(fireObjects.get(fireId).getFireCoordX() + " " + fireObjects.get(fireId).getFireCoordY());
+			ArrayList<StatusMessage> statuses = new ArrayList<StatusMessage>();
+			for(ACLMessage msg : firesToProcess.get(fireId)) {
+				try {
+					statuses.add((StatusMessage) msg.getContentObject());
+				} catch (UnreadableException e) {
+					e.printStackTrace();
+				}
+			}
+			//preciso de usar iterator para remover elementos do arraylist dentro do proprio loop
+			//isto vai dar jeito para filtrar veiculos nao disponiveis
+			Iterator<StatusMessage> i = statuses.iterator();
+			while (i.hasNext()) {
+			   StatusMessage msg = ((StatusMessage) i.next());
+			   // Do something
+			   System.out.println(msg.getVehicleName());
+			}
 		}
 		
 	}

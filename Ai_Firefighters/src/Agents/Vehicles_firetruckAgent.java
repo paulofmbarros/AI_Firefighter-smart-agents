@@ -97,7 +97,7 @@ public class Vehicles_firetruckAgent extends Agent {
 						System.out.println("Get status msg received in vehicle. "
 								+ "Coords of corresponding fire: X: "
 								+ "" + fm.getFireCoordX() + " Y: " + fm.getFireCoordY());
-						StatusMessage sm = new StatusMessage(coordX, coordY, fm.getFireId(), isAvailable, fuelTank, waterTank);
+						StatusMessage sm = new StatusMessage(coordX, coordY, fm.getFireId(), myAgent.getAID(), isAvailable, fuelTank, waterTank);
 						ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
 						reply.setContentObject(sm);
 						reply.addReceiver(msg.getSender());
