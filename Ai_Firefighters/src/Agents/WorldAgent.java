@@ -60,12 +60,12 @@ class StartFireInWorld extends CyclicBehaviour {
 						
 						if(content instanceof FireMessage) {
 							System.out.println("Recebida a mensagem no World Agent");
-							FireMessage fm = (FireMessage) content;
-							WorldObject fireWorldObject = new WorldObject(WorldObjectEnum.FIRE, new Point(fm.getFireCoordX(), fm.getFireCoordY()));
-						    
-						   	Map<Integer, Fire> fires = WorldAgent.getCurrentlyActiveFires();
-						   	
-						   	Fire fire = new Fire((fires.size() + 1), fireWorldObject);
+//							FireMessage fm = (FireMessage) content;
+//							WorldObject fireWorldObject = new WorldObject(WorldObjectEnum.FIRE, new Point(fm.getFireCoordX(), fm.getFireCoordY()));
+//						    
+//						   	Map<Integer, Fire> fires = WorldAgent.getCurrentlyActiveFires();
+//						   	
+//						   	Fire fire = new Fire((fires.size() + 1), fireWorldObject);
 //						    
 //						   	// Add, effectively, the Fire to the World
 //						   	WorldAgent.addFire(fm.getFireCoordX(), fm.getFireCoordY(), fire);
