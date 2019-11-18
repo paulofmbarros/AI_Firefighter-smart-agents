@@ -73,6 +73,8 @@ public abstract class Configurations {
 	 * Defines the maximum final intensity of a Fire.
 	 */
 	public final static int FIRE_MAX_FINAL_INTENSITY = 10;
+
+	public static final int FIRE_TRUCK_SPEED_MULTIPLIER = 0;
 	
 }
 
