@@ -60,15 +60,19 @@ class StartFireInWorld extends CyclicBehaviour {
 						
 						if(content instanceof FireMessage) {
 							System.out.println("Recebida a mensagem no World Agent");
-//							FireMessage fm = (FireMessage) content;
-//							WorldObject fireWorldObject = new WorldObject(WorldObjectEnum.FIRE, new Point(fm.getFireCoordX(), fm.getFireCoordY()));
-//						    
-//						   	Map<Integer, Fire> fires = WorldAgent.getCurrentlyActiveFires();
-//						   	
-//						   	Fire fire = new Fire((fires.size() + 1), fireWorldObject);
-//						    
-//						   	// Add, effectively, the Fire to the World
-//						   	WorldAgent.addFire(fm.getFireCoordX(), fm.getFireCoordY(), fire);
+							FireMessage fm = (FireMessage) content;
+							WorldObject fireWorldObject = new WorldObject(WorldObjectEnum.FIRE, new Point(fm.getFireCoordX(), fm.getFireCoordY()));
+						    
+						   	Map<Integer, Fire> fires = WorldAgent.getCurrentlyActiveFires();
+						   	Fire fire=null;
+						   	if(fires!=null) {
+						   		fire = new Fire((fires.size() + 1), fireWorldObject);
+						   	}
+						   	else {
+						   		fire = new Fire((1), fireWorldObject);
+						   	}
+						   	// Add, effectively, the Fire to the World
+						   	addFire(fm.getFireCoordX(), fm.getFireCoordY(), fire);
 //							
 						}
 
@@ -101,7 +105,7 @@ class StartFireInWorld extends CyclicBehaviour {
 	/**
 	 * The matrix that represents all the positions/points of the World's map/grid.
 	 */
-	private static Object[][] worldMap;
+	private Object[][] worldMap;
 	
 	/**
 	 * The Water Resources in the World.
@@ -307,10 +311,10 @@ class StartFireInWorld extends CyclicBehaviour {
 		return this.fireTruckAgents.size();
 	}
 	
-	public static void addFire(int firePositionX, int firePositionY, Fire fire) {
+	public void addFire(int firePositionX, int firePositionY, Fire fire) {
 		
 		// Add the Fire to the World's map/grid, putting it in its respectively position/point
-		worldMap[firePositionX][firePositionY] = fire;
+		this.worldMap[firePositionX][firePositionY] = fire; //ERRO AQUI
 		
 		// Add the Fire to the Currently Active Fires
 		currentlyActiveFires.put(fire.getID(), fire);
