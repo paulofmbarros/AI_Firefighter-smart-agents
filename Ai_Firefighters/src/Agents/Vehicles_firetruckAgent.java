@@ -143,6 +143,7 @@ public class Vehicles_firetruckAgent extends Agent {
 			}
 			if(waterTank <= 0) {
 				if(fuelTank <= simulateDistance(coordX, coordY, 30, 30) + simulateDistance(coordX, coordY, om.getFireCoordX(), om.getFireCoordY())) {
+					System.out.println("No water no fuel");
 					travel(50, 50);
 					fuelTank = Configurations.FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY;
 					travel(30, 30);
@@ -151,6 +152,7 @@ public class Vehicles_firetruckAgent extends Agent {
 					waterTank--;
 				}
 				else {
+					System.out.println("No water, has fuel");
 					travel(30,30);
 					waterTank = Configurations.FIRE_TRUCK_MAX_WATER_TANK_CAPACITY;
 					travel(om.getFireCoordX(), om.getFireCoordY());
@@ -158,16 +160,29 @@ public class Vehicles_firetruckAgent extends Agent {
 				}
 			}
 			else if(fuelTank <= simulateDistance(coordX, coordY, om.getFireCoordX(), om.getFireCoordY())) {
+				System.out.println("No fuel, has water");
 				travel(50, 50);
 				fuelTank = Configurations.FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY;
 				travel(om.getFireCoordX(), om.getFireCoordY());
 				waterTank--;
 			}
 			else {
+				System.out.println("Has everything");
 				travel(om.getFireCoordX(), om.getFireCoordY());
 				waterTank--;
 			}
 			System.out.println("Traveling done. Final stats: " + waterTank + " liters of water, " + fuelTank + " liters of fuel");
+			
+			try {
+				ACLMessage msg = new ACLMessage(ACLMessage.CONFIRM);
+				msg.setContentObject((OrderMessage) request.getContentObject());
+				msg.addReceiver(request.getSender());
+				send(msg);
+				isAvailable = true;
+			} catch (IOException | UnreadableException e) {
+				System.out.println("Erro ao enviar msg de confirmacao de fogo apagado");
+				e.printStackTrace();
+			}
 		}
 	}
 	

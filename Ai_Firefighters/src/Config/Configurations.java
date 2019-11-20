@@ -54,7 +54,7 @@ public abstract class Configurations {
 	/*
 	 * Fire truck max fuel tank capacity
 	 */
-	public final static int FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY = 50;
+	public final static int FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY = 100;
 	
 	/*
 	 * Fire truck velocity (timeout (ms) in which it moves to a new coordinate - less is faster)

@@ -304,6 +304,14 @@ public class FirestationAgent extends Agent {
 					System.out.println("The fire id was " + fm.getFireId());
 					addBehaviour(new MessageAllVehicles(myAgent, fm));
 					break;
+				case (ACLMessage.ACCEPT_PROPOSAL):
+					break;
+				case (ACLMessage.CONFIRM):
+					OrderMessage om = (OrderMessage) msg.getContentObject();
+					firesToProcess.remove(om.getFireId());
+					fireObjects.remove(om.getFireId());
+					System.out.println("There are still " + fireObjects.size() + " (" + firesToProcess.size() + ")" + " fires to process");
+					break;
 				default:
 					break;
 				}
@@ -312,7 +320,5 @@ public class FirestationAgent extends Agent {
 				System.out.println(e);
 			}
 		}
-		
 	}
-
 }
