@@ -1,6 +1,5 @@
 package Config;
 
-import jade.core.behaviours.SequentialBehaviour;
 
 public abstract class Configurations {
 	
@@ -61,6 +60,12 @@ public abstract class Configurations {
 	 * Fire truck velocity (timeout (ms) in which it moves to a new coordinate - less is faster)
 	 */
 	public final static int FIRE_TRUCK_SPEED_MULTIPLIER = 1;
+	
+
+	public static final float DRONE_SPEED_MULTIPLIER = (float) 0.3;
+
+	public static final float AIRPLANE_SPEED_MULTIPLIER = (float) 0.5;
+	
 	
 }
 

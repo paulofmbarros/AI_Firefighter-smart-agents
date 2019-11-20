@@ -1,6 +1,7 @@
 package Agents;
 
 import Messages.FireMessage;
+import Messages.OrderMessage;
 import Messages.StatusMessage;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -12,9 +13,13 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+
+
+import Config.Configurations;
 
 
 public class FirestationAgent extends Agent {
@@ -24,6 +29,7 @@ public class FirestationAgent extends Agent {
 	 */
 	private static final long serialVersionUID = 1L;
 	private HashMap<String, ArrayList<ACLMessage>> firesToProcess;
+	//private HashMap<String, ArrayList<StatusMessage>> firesAwaitingResponse;
 	private HashMap<String, FireMessage> fireObjects;
 	private int numberOfVehicles;
 	//private ArrayList<WaterSource> waterSources; //perguntar ao worldmap onde estao as watersources
@@ -31,6 +37,7 @@ public class FirestationAgent extends Agent {
 	protected void setup() {
 		this.firesToProcess = new HashMap<String, ArrayList<ACLMessage>>();
 		this.fireObjects = new HashMap<String, FireMessage>();
+		//this.firesAwaitingResponse = new HashMap<String, ArrayList<StatusMessage>>();
 		this.numberOfVehicles = 0;
 		SequentialBehaviour sb = new SequentialBehaviour();
 		sb.addSubBehaviour(new CountNumberOfVehicles(this));
@@ -148,11 +155,109 @@ public class FirestationAgent extends Agent {
 			Iterator<StatusMessage> i = statuses.iterator();
 			while (i.hasNext()) {
 			   StatusMessage msg = ((StatusMessage) i.next());
-			   // Do something
-			   System.out.println(msg.getVehicleName());
+			   if(!msg.isAvailable()) {
+				   i.remove();
+			   }
+			}
+			if(statuses.size() == 0) {
+				//nenhum encontrado, fazer qqr coisa sobre isto
+			}
+			else {				
+				//firesAwaitingResponse.put(fireId, statuses);
+				StatusMessage best = selectBestStatus(fireId, statuses);
+				OrderMessage om = new OrderMessage(fireObjects.get(fireId).getFireCoordX(), fireObjects.get(fireId).getFireCoordY(), fireId);
+				ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
+				try {
+					msg.setContentObject(om);
+					msg.addReceiver(best.getVehicleName());
+					send(msg);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 		
+	}
+	
+	
+	public int simulateDistance(int x1, int y1, int x2, int y2) {
+		int moves = 0;
+		while(x1 != x2 && x2 != y2) {
+			if (x1 < x2) {
+				x1++;
+			} else if (x1 > x2) {
+				x1--;
+			}
+			if (y1 < y2) {
+				y1++;
+			} else if (y1 > y2) {
+				y1--;
+			}
+			moves++;
+		}
+		return moves;
+	}
+	
+	public StatusMessage selectBestStatus(String fireId, ArrayList<StatusMessage> statuses) {
+		StatusMessage best = null;
+		double bestTime = 99999;
+		FireMessage fm = fireObjects.get(fireId);
+		
+		for(StatusMessage sm : statuses) {
+			float speed = 9999;
+			double time = 9999;
+			boolean needsWater = false;
+			boolean needsFuel = false;
+			if(sm.getVehicleType() == "FIRETRUCK") {
+				speed = Configurations.FIRE_TRUCK_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
+			}
+			else if (sm.getVehicleType() == "DRONE") {
+				speed = Configurations.DRONE_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
+			}
+			else {
+				speed = Configurations.AIRPLANE_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
+			}
+			
+			if(speed == 9999) {
+				System.out.println("Something went wrong fetching vehicle speed. Using default value (9999)");
+			}
+			
+			needsWater = sm.getWaterTank() <= 0;
+			if(needsWater) {
+				//escolhi 30 30 como as coords temporarias da bomba de agua
+				needsFuel = simulateDistance(sm.getCoordX(), sm.getCoordY(), 30, 30) + simulateDistance(30, 30, fm.getFireCoordX(), fm.getFireCoordY()) < sm.getFuelTank();
+			}
+			else {
+				needsFuel = simulateDistance(sm.getCoordX(), sm.getCoordY(), fm.getFireCoordX(), fm.getFireCoordY()) < sm.getFuelTank();
+			}
+			
+			int totalDistance = 9999;
+			
+			if(needsFuel && !needsWater) {
+				//50 50 sao as coords da estacao dos bombeiros, meter isto dinamico mais para a frente
+				totalDistance = simulateDistance(sm.getCoordX(), sm.getCoordY(), 50, 50);
+				totalDistance += simulateDistance(50, 50, fm.getFireCoordX(), fm.getFireCoordY());
+			}
+			
+			else if(needsWater && needsFuel) {
+				totalDistance = simulateDistance(sm.getCoordX(), sm.getCoordY(), 50, 50);
+				totalDistance += simulateDistance(50, 50, 30, 30);
+				totalDistance += simulateDistance(30, 30, fm.getFireCoordX(), fm.getFireCoordY());
+			}
+			else if (needsWater && !needsFuel) {
+				totalDistance = simulateDistance(sm.getCoordX(), sm.getCoordY(), 30, 30);
+				totalDistance += simulateDistance(30, 30, fm.getFireCoordX(), fm.getFireCoordY());
+			}
+			
+			time = speed * totalDistance;
+			if(time < bestTime) {
+				bestTime = time;
+				best = sm;
+			}
+			
+		}
+		
+		return best;
 	}
 	
 	class ReceiveMessages extends CyclicBehaviour {
@@ -192,6 +297,12 @@ public class FirestationAgent extends Agent {
 							addBehaviour(new SendBestVehicle(myAgent, sm.getFireId()));
 						}
 					}
+					break;
+				case (ACLMessage.REJECT_PROPOSAL):
+					System.out.println("Vehicle wasn't available, redoing the search...");
+					FireMessage fm = fireObjects.get(((StatusMessage) content).getFireId());
+					System.out.println("The fire id was " + fm.getFireId());
+					addBehaviour(new MessageAllVehicles(myAgent, fm));
 					break;
 				default:
 					break;

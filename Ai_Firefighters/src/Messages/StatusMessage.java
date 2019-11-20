@@ -12,14 +12,16 @@ public class StatusMessage implements java.io.Serializable {
 	private int fuelTank, waterTank;
 	private String fireId;
 	private AID vehicleName;
+	private String vehicleType; //mudar para enum?
 	private boolean available;
 	
-	public StatusMessage(int x, int y, String fireId, AID vehicleName, boolean available, int fuelTank, int waterTank) {
+	public StatusMessage(int x, int y, String fireId, AID vehicleName, boolean available, String vehicleType, int fuelTank, int waterTank) {
 		this.coordX = x;
 		this.coordY = y;
 		this.fireId = fireId;
 		this.vehicleName = vehicleName;
 		this.available = available;
+		this.vehicleType = vehicleType;
 		this.setFuelTank(fuelTank);
 		this.setWaterTank(waterTank);
 	}
@@ -74,6 +76,10 @@ public class StatusMessage implements java.io.Serializable {
 
 	public AID getVehicleName() {
 		return vehicleName;
+	}
+
+	public String getVehicleType() {
+		return vehicleType;
 	}
 	
 	
