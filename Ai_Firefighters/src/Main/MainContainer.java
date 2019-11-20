@@ -80,6 +80,7 @@ public class MainContainer {
 		
 		a.startAgentInPlatform("FirestationAgent", "Agents.FirestationAgent");
 		a.startAgentInPlatform("FireStarterAgent", "Agents.FireStarterAgent");
+		a.startAgentInPlatform("WorldAgent", "Agents.WorldAgent");
 	}
 
 }

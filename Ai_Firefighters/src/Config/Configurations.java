@@ -49,17 +49,31 @@ public abstract class Configurations {
 	/**
 	 * Defines the maximum water tank's capacity of a Fire Truck Agent.
 	 */
-	public final static int FIRE_TRUCK_MAX_WATER_TANK_CAPACITY = 10;
+	public final static int FIRE_TRUCK_MAX_WATER_TANK_CAPACITY = 9;
 	
 	/*
 	 * Fire truck max fuel tank capacity
 	 */
-	public final static int FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY = 100;
+	public final static int FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY = 50;
 	
 	/*
 	 * Fire truck velocity (timeout (ms) in which it moves to a new coordinate - less is faster)
 	 */
-	public final static int FIRE_TRUCK_SPEED_MULTIPLIER = 1;
+	public final static int FIRE_TRUCK_VELOCITY = 1000;
+	/**
+	 * Defines the maximum quantity of a Water Resource.
+	 */
+	public final static int WATER_RESOURCE_INITIAL_MAX_CAPACITY = 8;
+	/**
+	 * Defines the maximum initial intensity of a Fire.
+	 */
+	public final static int FIRE_MAX_INITIAL_INTENSITY = 6;
+	/**
+	 * Defines the maximum final intensity of a Fire.
+	 */
+	public final static int FIRE_MAX_FINAL_INTENSITY = 10;
+
+	public static final int FIRE_TRUCK_SPEED_MULTIPLIER = 1;
 	
 
 	public static final float DRONE_SPEED_MULTIPLIER = (float) 0.3;
