@@ -2,12 +2,13 @@ package Agents;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.HashMap;
 
 import Agents.FireStarterAgent.StartAFire;
 import Classes.ExtinguishedFire;
 import Classes.Fire;
 import Classes.WaterResource;
+import Config.Configurations;
 import Enums.WorldObjectEnum;
 import Messages.FireMessage;
 import World.WorldObject;
@@ -16,6 +17,7 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
+import java.util.Map;
 import java.awt.Point;
 
 
@@ -105,7 +107,7 @@ class StartFireInWorld extends CyclicBehaviour {
 	/**
 	 * The matrix that represents all the positions/points of the World's map/grid.
 	 */
-	private Object[][] worldMap;
+	private Object[][] worldMap= new Object[Configurations.GRID_WIDTH][Configurations.GRID_HEIGHT];
 	
 	/**
 	 * The Water Resources in the World.
@@ -115,7 +117,7 @@ class StartFireInWorld extends CyclicBehaviour {
 	/**
 	 * The Currently Active Fires in the World.
 	 */
-	private static Map<Integer, Fire> currentlyActiveFires;
+	private static HashMap<Integer, Fire> currentlyActiveFires = new HashMap<Integer, Fire>();
 	
 	/**
 	 * The Extinguished Fires by any Vehicle Agent, until the moment.

@@ -57,8 +57,9 @@ public class FireStarterAgent  extends Agent{
 				
 				//-------------Codigo para enviar mensagem ao Firestation ----------
 				msg.setContentObject(fm);
-				msg.addReceiver(new AID("FirestationAgent", AID.ISLOCALNAME));
+				//msg.addReceiver(new AID("FirestationAgent", AID.ISLOCALNAME));
 				msg.addReceiver(new AID("WorldAgent", AID.ISLOCALNAME));
+				
 				
 				send(msg);
 				
