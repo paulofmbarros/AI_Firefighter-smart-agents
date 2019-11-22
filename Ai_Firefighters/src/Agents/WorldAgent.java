@@ -321,7 +321,7 @@ class StartFireInWorld extends CyclicBehaviour {
 		// Add the Fire to the Currently Active Fires
 		currentlyActiveFires.put(fire.getID(), fire);
 		
-		System.out.println("Fogo adicionado a lista de fogos ativos");
+		System.out.println("Fogo adicionado a lista de fogos ativos no mapa");
 	}
 	}
 
