@@ -28,7 +28,17 @@ public class FireStarterAgent  extends Agent{
 	protected void setup() {
 		this.fireCoordX = new SecureRandom().nextInt(101);
 		this.fireCoordY = new SecureRandom().nextInt(101);
-		
+		/*
+		 * DEBUG
+		 if(new SecureRandom().nextInt() >= 0.5) {
+			this.fireCoordX = 100;
+			this.fireCoordY = 100;
+		}
+		else {
+			this.fireCoordX = 0;
+			this.fireCoordY = 0;
+		}
+		*/
 		addBehaviour( new StartAFire(this));
 	}
 	

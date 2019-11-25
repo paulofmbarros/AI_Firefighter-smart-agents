@@ -105,7 +105,7 @@ public class Vehicles_firetruckAgent extends Agent {
 	
 	public int simulateDistance(int x1, int y1, int x2, int y2) {
 		int moves = 0;
-		while(x1 != x2 && x2 != y2) {
+		while(x1 != x2 && y1 != y2) {
 			if (x1 < x2) {
 				x1++;
 			} else if (x1 > x2) {
@@ -142,7 +142,7 @@ public class Vehicles_firetruckAgent extends Agent {
 				e.printStackTrace();
 			}
 			if(waterTank <= 0) {
-				if(fuelTank <= simulateDistance(coordX, coordY, 30, 30) + simulateDistance(coordX, coordY, om.getFireCoordX(), om.getFireCoordY())) {
+				if(fuelTank <= simulateDistance(coordX, coordY, 30, 30) + simulateDistance(30, 30, om.getFireCoordX(), om.getFireCoordY())) {
 					System.out.println("No water no fuel");
 					travel(50, 50);
 					fuelTank = Configurations.FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY;
@@ -167,7 +167,7 @@ public class Vehicles_firetruckAgent extends Agent {
 				waterTank--;
 			}
 			else {
-				System.out.println("Has everything");
+				System.out.println("Has everything - " + fuelTank +" in fuel tank, " + waterTank + " in water tank. Cost is " + simulateDistance(coordX, coordY, om.getFireCoordX(), om.getFireCoordY()) + " moves");
 				travel(om.getFireCoordX(), om.getFireCoordY());
 				waterTank--;
 			}
