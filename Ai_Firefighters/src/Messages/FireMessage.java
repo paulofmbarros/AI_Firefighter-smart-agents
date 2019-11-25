@@ -11,10 +11,13 @@ public class FireMessage implements java.io.Serializable {
 	private int fireCoordX, fireCoordY;
 	private String fireId = UUID.randomUUID().toString();
 	
+	
 	public FireMessage(int x, int y) {
 		this.fireCoordX = x;
 		this.fireCoordY = y;
 	}
+	
+	
 
 	public int getFireCoordX() {
 		return fireCoordX;

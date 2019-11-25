@@ -13,6 +13,7 @@ import Classes.WaterResource;
 import Config.Configurations;
 import Enums.WorldObjectEnum;
 import Messages.FireMessage;
+import Messages.OrderMessage;
 import World.WorldObject;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -130,28 +131,16 @@ public class WorldAgent extends Agent{
 						content = msg.getContentObject();
 						
 						if(content instanceof FireMessage) {
-							FireMessage fm = (FireMessage) content;
-							//get the world fire object
+							OrderMessage om = (OrderMessage) content;
+							
 							
 							if(getNumCurrentlyActiveFires()>0) {
+								removeFire(om.getFireCoordX(), om.getFireCoordY(), om.getIdVehicleResponsibleForExtinguishFire());
 								
 							}
 							else {
-								//significa que todos os fogos já estão extintos
+								System.out.println("Todos os fogos já se encontram extintos");
 							}
-							WorldObject fireWorldObject = new WorldObject(WorldObjectEnum.FIRE, new Point(fm.getFireCoordX(), fm.getFireCoordY()));
-						    
-						   	Map<Integer, Fire> fires = WorldAgent.getCurrentlyActiveFires();
-						   	Fire fire=null;
-						   	if(fires!=null) {
-						   		fire = new Fire((fires.size() + 1), fireWorldObject);
-						   	}
-						   	else {
-						   		fire = new Fire((1), fireWorldObject);
-						   	}
-						   	// Add, effectively, the Fire to the World
-						   	addFire(fm.getFireCoordX(), fm.getFireCoordY(), fire);
-//							
 						}
 
 					} catch (UnreadableException e) {
@@ -390,7 +379,7 @@ public class WorldAgent extends Agent{
 	public void addFire(int firePositionX, int firePositionY, Fire fire) {
 		
 		// Add the Fire to the World's map/grid, putting it in its respectively position/point
-		this.worldMap[firePositionX][firePositionY] = fire; //ERRO AQUI
+		this.worldMap[firePositionX][firePositionY] = fire; 
 		
 		// Add the Fire to the Currently Active Fires
 		currentlyActiveFires.put(fire.getID(), fire);

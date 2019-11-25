@@ -310,6 +310,8 @@ public class FirestationAgent extends Agent {
 					OrderMessage om = (OrderMessage) msg.getContentObject();
 					firesToProcess.remove(om.getFireId());
 					fireObjects.remove(om.getFireId());
+					//enviar mensagem ao worldAGENT PARA REMOVER FOGO DO MAPA
+					
 					System.out.println("There are still " + fireObjects.size() + " (" + firesToProcess.size() + ")" + " fires to process");
 					break;
 				default:
