@@ -3,6 +3,7 @@ package Agents;
 import Messages.FireMessage;
 import Messages.OrderMessage;
 import Messages.StatusMessage;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -310,7 +311,11 @@ public class FirestationAgent extends Agent {
 					OrderMessage om = (OrderMessage) msg.getContentObject();
 					firesToProcess.remove(om.getFireId());
 					fireObjects.remove(om.getFireId());
-					//enviar mensagem ao worldAGENT PARA REMOVER FOGO DO MAPA
+					
+					ACLMessage message = new ACLMessage(ACLMessage.CONFIRM);
+					message.setContentObject(om);
+					message.addReceiver(new AID("WorldAgent", AID.ISLOCALNAME));
+					send(message);
 					
 					System.out.println("There are still " + fireObjects.size() + " (" + firesToProcess.size() + ")" + " fires to process");
 					break;

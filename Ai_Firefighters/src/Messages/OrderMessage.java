@@ -7,7 +7,7 @@ public class OrderMessage implements java.io.Serializable {
 	 */
 	private static final long serialVersionUID = 1805288644572998364L;
 	
-	private int fireCoordX, fireCoordY, idVehicleResponsibleForExtinguishFire;
+	private int fireCoordX, fireCoordY;
 	private String fireId;
 
 	
@@ -16,12 +16,7 @@ public class OrderMessage implements java.io.Serializable {
 		this.fireCoordY = fy;
 		this.setFireId(fireId);
 	}
-	public OrderMessage(int fx, int fy, String fireId, int _idVehicleResponsibleForExtinguishFire) {
-		this.fireCoordX = fx;
-		this.fireCoordY = fy;
-		this.setFireId(fireId);
-		this.idVehicleResponsibleForExtinguishFire=_idVehicleResponsibleForExtinguishFire;
-	}
+	
 
 	public int getFireCoordX() {
 		return fireCoordX;
@@ -47,12 +42,7 @@ public class OrderMessage implements java.io.Serializable {
 		this.fireId = fireId;
 	}
 
-	public int getIdVehicleResponsibleForExtinguishFire() {
-		return idVehicleResponsibleForExtinguishFire;
-	}
-
-	public void setIdVehicleResponsibleForExtinguishFire(int idVehicleResponsibleForExtinguishFire) {
-		this.idVehicleResponsibleForExtinguishFire = idVehicleResponsibleForExtinguishFire;
 	
-	}
+
+	
 }
