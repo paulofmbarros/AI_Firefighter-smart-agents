@@ -106,7 +106,7 @@ public class WorldAgent extends Agent{
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public FinishFireInWorld(WorldAgent worldAgent) {
+		public FinishFireInWorld(Agent a) {
 			// TODO Auto-generated constructor stub
 		}
 
@@ -125,18 +125,18 @@ public class WorldAgent extends Agent{
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				if (msg.getPerformative()==ACLMessage.INFORM) {
+				if (msg.getPerformative()==ACLMessage.CONFIRM) {
 					Object content;
 					try {
 						content = msg.getContentObject();
 						
-						if(content instanceof FireMessage) {
+						if(content instanceof OrderMessage) {
 							OrderMessage om = (OrderMessage) content;
 							
 							
 							if(getNumCurrentlyActiveFires()>0) {
-								removeFire(om.getFireCoordX(), om.getFireCoordY(), om.getIdVehicleResponsibleForExtinguishFire());
-								
+								removeFire(om.getFireCoordX(), om.getFireCoordY());
+								System.out.println("Fogo extinto do mapa");
 							}
 							else {
 								System.out.println("Todos os fogos já se encontram extintos");
@@ -395,7 +395,7 @@ public class WorldAgent extends Agent{
 	 * @param idVehicleResponsibleForExtinguishFire the ID of the Vehicle Agent
 	 *        responsible for extinguish the Fire
 	 */
-	public void removeFire(int firePositionX, int firePositionY, int idVehicleResponsibleForExtinguishFire) {
+	public void removeFire(int firePositionX, int firePositionY) {
 		
 		// The position of the pretended Fire to be removed can't be null
 		if(this.worldMap[firePositionX][firePositionY] != null) {
@@ -411,7 +411,7 @@ public class WorldAgent extends Agent{
 				// Remove the Fire from the Currently Active Fires
 				this.currentlyActiveFires.remove(fireToBeExtinguished.getID());
 				
-				ExtinguishedFire extinguishedFire = new ExtinguishedFire(fireToBeExtinguished, idVehicleResponsibleForExtinguishFire);
+				ExtinguishedFire extinguishedFire = new ExtinguishedFire(fireToBeExtinguished);
 				
 				// Add the Fire to the Extinguished Fires
 				this.extinguishedFires.add(extinguishedFire);

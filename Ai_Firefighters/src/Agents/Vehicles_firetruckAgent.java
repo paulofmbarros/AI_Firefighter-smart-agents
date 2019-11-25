@@ -177,7 +177,7 @@ public class Vehicles_firetruckAgent extends Agent {
 				ACLMessage msg = new ACLMessage(ACLMessage.CONFIRM);
 				msg.setContentObject((OrderMessage) request.getContentObject());
 				msg.addReceiver(request.getSender());
-				//enviar aqui na mensagem o id do veiculo que apagou o fogo
+				//A enviar a mensagem a dizer que apagou o fogo ao Firestation
 				send(msg);
 				isAvailable = true;
 			} catch (IOException | UnreadableException e) {

@@ -26,12 +26,10 @@ public class ExtinguishedFire {
 	 * The constructor #1 of the Extinguished Fire.
 	 * 
 	 * @param fireExtinguished the Fire that was extinguished
-	 * @param idVehicleResponsibleForExtinguishFire the ID of the vehicle responsible for the extinguish of the Fire
 	 */
-	public ExtinguishedFire(Fire extinguishedFire, int idVehicleResponsibleForExtinguishFire) {
+	public ExtinguishedFire(Fire extinguishedFire) {
 		this.extinguishedFire = extinguishedFire;
 		this.extinguishedFireTimeStamp = System.currentTimeMillis();
-		this.idVehicleResponsibleForExtinguishFire = idVehicleResponsibleForExtinguishFire;
 	}
 	
 	// Methods/Functions:

@@ -32,6 +32,9 @@ public class FireStarterAgent  extends Agent{
 		addBehaviour( new StartAFire(this));
 	}
 	
+	
+	
+	
 	//TODO: TEMOS DE TRANSFORMAR ISTO NUM TICKERBEHAVIOUR PORQUE VAMOS TER MAIS QUE UM FOGO A SER GERADO
 	
 	class StartAFire extends OneShotBehaviour {
@@ -58,7 +61,7 @@ public class FireStarterAgent  extends Agent{
 				//-------------Codigo para enviar mensagem ao Firestation ----------
 				msg.setContentObject(fm);
 				msg.addReceiver(new AID("FirestationAgent", AID.ISLOCALNAME));
-				msg.addReceiver(new AID("WorldAgent", AID.ISLOCALNAME));
+				//msg.addReceiver(new AID("WorldAgent", AID.ISLOCALNAME));
 				
 				
 				
