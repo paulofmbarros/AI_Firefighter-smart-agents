@@ -10,6 +10,7 @@ import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -25,7 +26,7 @@ public class Vehicles_firetruckAgent extends Agent {
 	private int coordX = 50;
 	private int coordY = 50;
 	private int waterTank = Configurations.FIRE_TRUCK_MAX_WATER_TANK_CAPACITY;
-	private int fuelTank = Configurations.FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY;
+	private int fuelTank = 10000;//Configurations.FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY;
 	private int speed = 100; // delete for real traveling speed (slow and boring!) Configurations.BASE_VEHICLE_SPEED*Configurations.FIRE_TRUCK_SPEED_MULTIPLIER;
 
 
@@ -79,7 +80,7 @@ public class Vehicles_firetruckAgent extends Agent {
 	private void travel(int x, int y) {
 		System.out.println("Traveling to " + x + "x, " + y + "y");
 		while(coordX != x || coordY != y) {
-			System.out.println(coordX + "x, " + coordY + "y" + "   --   " + fuelTank + " liters of fuel");
+			System.out.println(coordX + "x, " + coordY + "y" + "   --   " + fuelTank + "l fuel, " + waterTank +"l water");
 			if(coordX < x) {
 				coordX++;
 			}
@@ -105,7 +106,7 @@ public class Vehicles_firetruckAgent extends Agent {
 	
 	public int simulateDistance(int x1, int y1, int x2, int y2) {
 		int moves = 0;
-		while(x1 != x2 && y1 != y2) {
+		while(x1 != x2 || y1 != y2) {
 			if (x1 < x2) {
 				x1++;
 			} else if (x1 > x2) {
@@ -119,6 +120,124 @@ public class Vehicles_firetruckAgent extends Agent {
 			moves++;
 		}
 		return moves;
+	}
+	
+	class TravelToFireTicker extends TickerBehaviour {
+
+		/**
+		 * 
+		 */
+		private boolean travelingToFire, travelingToWater, travelingToFuel;
+		private int destX, destY, tick;
+		private OrderMessage order;
+		private ACLMessage request;
+		public TravelToFireTicker(Agent a, ACLMessage request) {
+			super(a, speed);
+			this.travelingToFire = false;
+			this.travelingToFuel = false;
+			this.travelingToWater = false;
+			this.request = request;
+			this.tick = 0; //debug
+			try {
+				this.order = (OrderMessage) request.getContentObject();
+			} catch (UnreadableException e) {
+				e.printStackTrace();
+			}
+			
+			if(order != null) {
+				System.out.println(coordX + "x, " + coordY + "y" + "   --   " + fuelTank + "l fuel, " + waterTank +"l water");
+				if(waterTank <= 0) {
+					if(fuelTank <= simulateDistance(coordX, coordY, 30, 30) + simulateDistance(30, 30, order.getFireCoordX(), order.getFireCoordY())) {
+						System.out.println("No water no fuel");
+						this.travelingToWater = true;
+						this.travelingToFire = true;
+					}
+					else {
+						System.out.println("No water, has fuel");
+						this.travelingToWater = true;
+					}
+				}
+				else if(fuelTank <= simulateDistance(coordX, coordY, order.getFireCoordX(), order.getFireCoordY())) {
+					System.out.println("No fuel, has water");
+					this.travelingToFuel = true;
+				}
+				else {
+					System.out.println("Has everything - " + fuelTank +" in fuel tank, " + waterTank + " in water tank. Cost is " + simulateDistance(coordX, coordY, order.getFireCoordX(), order.getFireCoordY()) + " moves");
+					travelingToFire = true;
+				}
+			}
+		}
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		protected void onTick() {
+			if(travelingToWater && travelingToFuel) {
+				if(destX != 50 && destY != 50 && tick != 0) {
+					System.out.println("Traveling to " + destX + "x, " + destY + "y");
+				}
+				this.destX = 50;
+				this.destY = 50;
+				if(coordX == this.destX && coordY == this.destY) {
+					fuelTank = Configurations.FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY;
+					this.travelingToFuel = false;
+				}
+			}
+			else if(travelingToWater) {
+				if(destX != 30 && destY != 30 && tick != 0) {
+					System.out.println("Traveling to " + destX + "x, " + destY + "y");
+				}
+				this.destX = 30;
+				this.destY = 30;
+				if(coordX == this.destX && coordY == this.destY) {
+					waterTank = Configurations.FIRE_TRUCK_MAX_WATER_TANK_CAPACITY;
+					this.travelingToWater = false;
+				}
+			}
+			else if (travelingToFire) {
+				if(destX !=  order.getFireCoordX() && destY != order.getFireCoordY() && tick != 0) {
+					System.out.println("Traveling to " + destX + "x, " + destY + "y");
+				}
+				this.destX = order.getFireCoordX();
+				this.destY = order.getFireCoordY();
+				if(coordX == this.destX && coordY == this.destY) {
+					waterTank--;
+					this.travelingToFire = false;
+				}
+			}
+			
+			if (coordX < destX) {
+				coordX++;
+			} else if (coordX > destX) {
+				coordX--;
+			}
+			if (coordY < destY) {
+				coordY++;
+			} else if (coordY > destY) {
+				coordY--;
+			}
+
+			System.out.println(coordX + "x, " + coordY + "y" + "   --   " + fuelTank + "l fuel, " + waterTank +"l water");
+			if(travelingToFire || travelingToFuel || travelingToWater) {
+				fuelTank--;
+			}
+			else {
+				System.out.println("Traveling done. Final stats: " + waterTank + " liters of water, " + fuelTank + " liters of fuel");
+				try {
+					ACLMessage msg = new ACLMessage(ACLMessage.CONFIRM);
+					msg.setContentObject((OrderMessage) request.getContentObject());
+					msg.addReceiver(request.getSender());
+					//A enviar a mensagem a dizer que apagou o fogo ao Firestation
+					send(msg);
+					isAvailable = true;
+				} catch (IOException | UnreadableException e) {
+					System.out.println("Erro ao enviar msg de confirmacao de fogo apagado");
+					e.printStackTrace();
+				}
+				
+				stop();
+			}
+		}
+		
 	}
 	
 	class TravelToFire extends OneShotBehaviour {
@@ -213,7 +332,7 @@ public class Vehicles_firetruckAgent extends Agent {
 				send(msg);
 				
 				//add behaviour travel to fire and put it out
-				addBehaviour(new TravelToFire(myAgent, request));
+				addBehaviour(new TravelToFireTicker(myAgent, request));
 			}
 			else {
 				try {

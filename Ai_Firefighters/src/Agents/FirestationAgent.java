@@ -162,18 +162,40 @@ public class FirestationAgent extends Agent {
 			}
 			if(statuses.size() == 0) {
 				//nenhum encontrado, fazer qqr coisa sobre isto
+				//TODO IMPORTANTE. A firestation deve voltar a tentar encontrar veiculos
+				System.out.println("But none of those were available...");
+				try {
+					Thread.sleep(3000);
+				}
+				catch(Exception e ) {
+					System.out.println(e);
+				}
+				addBehaviour(new MessageAllVehicles(myAgent, fireObjects.get(fireId)));
 			}
 			else {				
 				//firesAwaitingResponse.put(fireId, statuses);
 				StatusMessage best = selectBestStatus(fireId, statuses);
-				OrderMessage om = new OrderMessage(fireObjects.get(fireId).getFireCoordX(), fireObjects.get(fireId).getFireCoordY(), fireId);
-				ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
-				try {
-					msg.setContentObject(om);
-					msg.addReceiver(best.getVehicleName());
-					send(msg);
-				} catch (IOException e) {
-					e.printStackTrace();
+				if(best == null) {
+					//nenhum veiculo pode ir apagar o fogo...
+					System.out.println("There are vehicles available but none can travel to fire (no fuel/water?)");
+					try {
+						Thread.sleep(3000);
+					}
+					catch(Exception e ) {
+						System.out.println(e);
+					}
+					addBehaviour(new MessageAllVehicles(myAgent, fireObjects.get(fireId)));
+				}
+				else {
+					OrderMessage om = new OrderMessage(fireObjects.get(fireId).getFireCoordX(), fireObjects.get(fireId).getFireCoordY(), fireId);
+					ACLMessage msg = new ACLMessage(ACLMessage.PROPOSE);
+					try {
+						msg.setContentObject(om);
+						msg.addReceiver(best.getVehicleName());
+						send(msg);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -183,7 +205,7 @@ public class FirestationAgent extends Agent {
 	
 	public int simulateDistance(int x1, int y1, int x2, int y2) {
 		int moves = 0;
-		while(x1 != x2 && x2 != y2) {
+		while(x1 != x2 || y1 != y2) {
 			if (x1 < x2) {
 				x1++;
 			} else if (x1 > x2) {
