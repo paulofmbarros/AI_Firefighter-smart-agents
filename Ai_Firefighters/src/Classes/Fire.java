@@ -76,7 +76,7 @@ public class Fire {
 			Random random = new Random();
 			
 			this.worldObject = worldObject;
-			
+			this.id=id;
 			this.creationTimeStamp = System.currentTimeMillis();
 			
 			this.currentIntensity = random.nextInt(Configurations.FIRE_MAX_INITIAL_INTENSITY) + 1;

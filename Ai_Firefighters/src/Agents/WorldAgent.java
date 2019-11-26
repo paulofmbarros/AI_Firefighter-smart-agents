@@ -7,6 +7,7 @@ import java.util.HashMap;
 import Agents.FireStarterAgent.StartAFire;
 import Agents.FirestationAgent.CountNumberOfVehicles;
 import Agents.FirestationAgent.ReceiveMessages;
+import Agents.Vehicles_firetruckAgent.CheckCanTravel;
 import Classes.ExtinguishedFire;
 import Classes.Fire;
 import Classes.WaterResource;
@@ -14,6 +15,7 @@ import Config.Configurations;
 import Enums.WorldObjectEnum;
 import Messages.FireMessage;
 import Messages.OrderMessage;
+import Messages.StatusMessage;
 import World.WorldObject;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -28,23 +30,24 @@ import java.awt.Point;
 public class WorldAgent extends Agent{
 	
 	protected void setup() {
+		currentlyActiveFires = new HashMap<Integer, Fire>();
 		SequentialBehaviour sb = new SequentialBehaviour();
-		sb.addSubBehaviour(new StartFireInWorld(this));
-		sb.addSubBehaviour(new FinishFireInWorld(this));
+		sb.addSubBehaviour(new ReceiveMessages(this));
 		addBehaviour(sb);
 	}
-	class StartFireInWorld extends CyclicBehaviour {
-		
+	
+	class ReceiveMessages extends CyclicBehaviour {
+
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-
-		StartFireInWorld(Agent a) {
+		
+		public ReceiveMessages(Agent a) {
 			super(a);
 		}
 
-		@Override
+		
 		public void action() {
 			ACLMessage msg = receive();
 			if(msg == null) {
@@ -52,26 +55,18 @@ public class WorldAgent extends Agent{
 				return;
 			}
 			
-			
-				try {
-					Object content = msg.getContentObject();
-				} catch (UnreadableException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				
-				
-				if (msg.getPerformative()==ACLMessage.INFORM) {
-					Object content;
-					try {
-						content = msg.getContentObject();
+			try {
+				Object content = msg.getContentObject();
+				switch(msg.getPerformative()) {
+				case (ACLMessage.INFORM):
+					
+					
 						
 						if(content instanceof FireMessage) {
 							FireMessage fm = (FireMessage) content;
 							WorldObject fireWorldObject = new WorldObject(WorldObjectEnum.FIRE, new Point(fm.getFireCoordX(), fm.getFireCoordY()));
 						    
-						   	Map<Integer, Fire> fires = WorldAgent.getCurrentlyActiveFires();
+						   	Map<Integer, Fire> fires = getCurrentlyActiveFires();
 						   	Fire fire=null;
 						   	if(fires!=null) {
 						   		fire = new Fire((fires.size() + 1), fireWorldObject);
@@ -81,79 +76,35 @@ public class WorldAgent extends Agent{
 						   	}
 						   	// Add, effectively, the Fire to the World
 						   	addFire(fm.getFireCoordX(), fm.getFireCoordY(), fire);
-//							
+							
 						}
-
-					} catch (UnreadableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					
+					break;
+				case (ACLMessage.CONFIRM):
+					if(content instanceof OrderMessage) {
+						OrderMessage om = (OrderMessage) content;
+						int x=getNumCurrentlyActiveFires();
+						if(getNumCurrentlyActiveFires()>0) {
+							removeFire(om.getFireCoordX(), om.getFireCoordY());
+							
+						}
+						else {
+							System.out.println("Todos os fogos já se encontram extintos");
+						}
 					}
-										
-					
-					
-				}
-				//int[] firePosition = WorldAgent.generateRandomPosition();
-		    	
-			   	
-		}
-}
-	
-	
-	class FinishFireInWorld extends CyclicBehaviour{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public FinishFireInWorld(Agent a) {
-			// TODO Auto-generated constructor stub
-		}
-
-		@Override
-		public void action() {
-			ACLMessage msg = receive();
-			if(msg == null) {
-				block();
-				return;
+					break;
+				default:
+					break;
+				
 			}
-			
-			
-				try {
-					Object content = msg.getContentObject();
-				} catch (UnreadableException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (msg.getPerformative()==ACLMessage.CONFIRM) {
-					Object content;
-					try {
-						content = msg.getContentObject();
-						
-						if(content instanceof OrderMessage) {
-							OrderMessage om = (OrderMessage) content;
-							
-							
-							if(getNumCurrentlyActiveFires()>0) {
-								removeFire(om.getFireCoordX(), om.getFireCoordY());
-								System.out.println("Fogo extinto do mapa");
-							}
-							else {
-								System.out.println("Todos os fogos já se encontram extintos");
-							}
-						}
-
-					} catch (UnreadableException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-										
-					
-					
-				}
+			}
+			catch(Exception e) {
+				System.out.println(e);
+			}
 		}
-		
 	}
+	
+	
 	/**
 	 * The current type of the Weather Season from the set {Spring, Summer, Autumn and Winter}
 	 */
@@ -180,12 +131,12 @@ public class WorldAgent extends Agent{
 	/**
 	 * The Currently Active Fires in the World.
 	 */
-	private static HashMap<Integer, Fire> currentlyActiveFires = new HashMap<Integer, Fire>();
+	private  HashMap<Integer, Fire> currentlyActiveFires;
 	
 	/**
 	 * The Extinguished Fires by any Vehicle Agent, until the moment.
 	 */
-	private ArrayList<ExtinguishedFire> extinguishedFires;
+	private ArrayList<ExtinguishedFire> extinguishedFires=new ArrayList<ExtinguishedFire>();
 	
 	
 	// Fixed Agents (without/with no movement)
@@ -255,7 +206,7 @@ public class WorldAgent extends Agent{
 	 * 
 	 * @return all the Currently Active Fires presented in the World
 	 */
-	public static Map<Integer, Fire> getCurrentlyActiveFires() {
+	public Map<Integer, Fire> getCurrentlyActiveFires() {
 		return currentlyActiveFires;
 	}
 	
@@ -418,7 +369,7 @@ public class WorldAgent extends Agent{
 			}
 		}
 		
-		System.out.println("Fogo removido da lista de fogos ativos no mapa");
+		System.out.println("FOGO REMOVIDO DA LISTA DE FOGOS ATIVOS DO MAPA");
 	}
 	}
 

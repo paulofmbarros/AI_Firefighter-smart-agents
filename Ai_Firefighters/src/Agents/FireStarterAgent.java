@@ -57,10 +57,10 @@ public class FireStarterAgent  extends Agent{
 			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 			try {
 				
-				//-------------Codigo para enviar mensagem ao Firestation ----------
+				
 				msg.setContentObject(fm);
 				msg.addReceiver(new AID("FirestationAgent", AID.ISLOCALNAME));
-				//msg.addReceiver(new AID("WorldAgent", AID.ISLOCALNAME));
+				msg.addReceiver(new AID("WorldAgent", AID.ISLOCALNAME));
 				
 				
 				

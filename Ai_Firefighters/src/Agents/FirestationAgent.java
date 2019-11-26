@@ -334,6 +334,7 @@ public class FirestationAgent extends Agent {
 					firesToProcess.remove(om.getFireId());
 					fireObjects.remove(om.getFireId());
 					
+					//AQUI ENVIA A MENSAGEM AO WORLDAGENT PARA REMOVER O FOGO DO WORLD
 					ACLMessage message = new ACLMessage(ACLMessage.CONFIRM);
 					message.setContentObject(om);
 					message.addReceiver(new AID("WorldAgent", AID.ISLOCALNAME));
