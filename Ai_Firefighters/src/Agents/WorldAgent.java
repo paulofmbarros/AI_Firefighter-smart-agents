@@ -10,13 +10,16 @@ import Agents.FirestationAgent.ReceiveMessages;
 import Agents.Vehicles_firetruckAgent.CheckCanTravel;
 import Classes.ExtinguishedFire;
 import Classes.Fire;
+import Classes.FuelResource;
 import Classes.WaterResource;
 import Config.Configurations;
 import Enums.WorldObjectEnum;
 import Messages.FireMessage;
 import Messages.OrderMessage;
+import Messages.ResourcesMessage;
 import Messages.StatusMessage;
 import World.WorldObject;
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
@@ -25,12 +28,14 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import java.util.Map;
 import java.awt.Point;
+import java.io.IOException;
 
 
 public class WorldAgent extends Agent{
 	
 	protected void setup() {
 		currentlyActiveFires = new HashMap<Integer, Fire>();
+		this.generateResourcesPositions();
 		SequentialBehaviour sb = new SequentialBehaviour();
 		sb.addSubBehaviour(new ReceiveMessages(this));
 		addBehaviour(sb);
@@ -59,9 +64,6 @@ public class WorldAgent extends Agent{
 				Object content = msg.getContentObject();
 				switch(msg.getPerformative()) {
 				case (ACLMessage.INFORM):
-					
-					
-						
 						if(content instanceof FireMessage) {
 							FireMessage fm = (FireMessage) content;
 							WorldObject fireWorldObject = new WorldObject(WorldObjectEnum.FIRE, new Point(fm.getFireCoordX(), fm.getFireCoordY()));
@@ -91,6 +93,23 @@ public class WorldAgent extends Agent{
 						else {
 							System.out.println("Todos os fogos já se encontram extintos");
 						}
+					}
+					break;
+				case (ACLMessage.REQUEST):
+					if(content instanceof ResourcesMessage) {
+						System.out.println("Reources's positions request received.");
+						ResourcesMessage rm = new ResourcesMessage(waterResources, fuelResources);
+						ACLMessage message = new ACLMessage(ACLMessage.INFORM);
+						try {
+						message.setContentObject(rm);
+						message.addReceiver(new AID("FirestationAgent", AID.ISLOCALNAME));
+						send(message);
+						}
+						catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+						System.out.println("Reources's positions sent.");
 					}
 					break;
 				default:
@@ -127,6 +146,11 @@ public class WorldAgent extends Agent{
 	 * The Water Resources in the World.
 	 */
 	private ArrayList<WaterResource> waterResources;
+	
+	/**
+	 * The Water Resources in the World.
+	 */
+	private ArrayList<FuelResource> fuelResources;
 	
 	/**
 	 * The Currently Active Fires in the World.
@@ -188,17 +212,73 @@ public class WorldAgent extends Agent{
 		return numAvailablePositions;
 	}
 	
+	/**
+	 * Generate all the positions/points of water and fuel resources in the World's map/grid.
+	 */
+	public void generateResourcesPositions() {
+		waterResources = new ArrayList<WaterResource>();
+		fuelResources = new ArrayList<FuelResource>();
+		
+		//Water Resources
+		Point p0= new Point(new SecureRandom().nextInt(50),new SecureRandom().nextInt(50));
+		WorldObject wo0 = new WorldObject(WorldObjectEnum.WATER_RESOURCE,p0);
+		WaterResource wr0 = new WaterResource((byte) 0,wo0);
+		this.worldMap[(int) p0.getX()][(int) p0.getY()] = wr0;
+		
+		Point p1= new Point(new SecureRandom().nextInt(50),new SecureRandom().nextInt(100-50) + 50);
+		WorldObject wo1 = new WorldObject(WorldObjectEnum.WATER_RESOURCE,p1);
+		WaterResource wr1 = new WaterResource((byte) 1,wo1);
+		this.worldMap[(int) p1.getX()][(int) p1.getY()] = wr1;
+		
+		Point p2= new Point(new SecureRandom().nextInt(100-50) + 50, new SecureRandom().nextInt(50));
+		WorldObject wo2 = new WorldObject(WorldObjectEnum.WATER_RESOURCE,p2);
+		WaterResource wr2 = new WaterResource((byte) 2,wo2);
+		this.worldMap[(int) p2.getX()][(int) p2.getY()] = wr2;
+		
+		Point p3= new Point(new SecureRandom().nextInt(100-50) + 50,new SecureRandom().nextInt(100-50) + 50);
+		WorldObject wo3 = new WorldObject(WorldObjectEnum.WATER_RESOURCE,p3);
+		WaterResource wr3 = new WaterResource((byte) 3,wo3);
+		this.worldMap[(int) p3.getX()][(int) p3.getY()] = wr3;
+		
+		waterResources.add(wr0);
+		waterResources.add(wr1);
+		waterResources.add(wr2);
+		waterResources.add(wr3);
+		
+		//Fuel Resources
+		Point p4= new Point(new SecureRandom().nextInt(50),new SecureRandom().nextInt(50));
+		WorldObject wo4 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE,p4);
+		FuelResource fr0 = new FuelResource((byte) 0,wo4);
+		this.worldMap[(int) p4.getX()][(int) p4.getY()] = fr0;
+		
+		Point p5= new Point(new SecureRandom().nextInt(50),new SecureRandom().nextInt(100-50) + 50);
+		WorldObject wo5 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE,p5);
+		FuelResource fr1 = new FuelResource((byte) 1,wo5);
+		this.worldMap[(int) p5.getX()][(int) p5.getY()] = fr1;
+		
+		Point p6= new Point(new SecureRandom().nextInt(100-50) + 50, new SecureRandom().nextInt(50));
+		WorldObject wo6 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE,p6);
+		FuelResource fr2 = new FuelResource((byte) 2,wo6);
+		this.worldMap[(int) p6.getX()][(int) p6.getY()] = fr2;
+		
+		Point p7= new Point(new SecureRandom().nextInt(100-50) + 50,new SecureRandom().nextInt(100-50) + 50);
+		WorldObject wo7 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE,p7);
+		FuelResource fr3 = new FuelResource((byte) 3,wo7);
+		this.worldMap[(int) p7.getX()][(int) p3.getY()] = fr3;
+		
+		fuelResources.add(fr0);
+		fuelResources.add(fr1);
+		fuelResources.add(fr2);
+		fuelResources.add(fr3);
+		
+	}
+	
 	public ArrayList<WaterResource> getWaterResources() {
 		return this.waterResources;
 	}
 	
-	/**
-	 * Returns the number of all the Water Resources presented in the World.
-	 * 
-	 * @return the number of all the Water Resources presented in the World
-	 */
-	public int getNumWaterResources() {
-		return this.waterResources.size();
+	public ArrayList<FuelResource> getFuelResources() {
+		return this.fuelResources;
 	}
 	
 	/**

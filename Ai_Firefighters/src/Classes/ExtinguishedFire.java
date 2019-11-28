@@ -1,7 +1,7 @@
 package Classes;
 
 
-public class ExtinguishedFire {
+public class ExtinguishedFire implements java.io.Serializable{
 	// Global Instance Variables:
 	
 	/**

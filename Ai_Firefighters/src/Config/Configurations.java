@@ -13,6 +13,10 @@ public abstract class Configurations {
 	/**
 	 * Defines the maximum number of Aircrafts that can exist in the World.
 	 */
+	public static int NUM_MAX_WATER_RESOUCES = 4;	
+	/**
+	 * Defines the maximum number of Aircrafts that can exist in the World.
+	 */
 	public static int NUM_MAX_AIRCRAFTS = 1;
 	
 	/**
@@ -54,7 +58,7 @@ public abstract class Configurations {
 	/*
 	 * Fire truck max fuel tank capacity
 	 */
-	public final static int FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY = 100;
+	public final static int FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY = 250;
 	
 	/*
 	 * Fire truck velocity (timeout (ms) in which it moves to a new coordinate - less is faster)
@@ -64,6 +68,10 @@ public abstract class Configurations {
 	 * Defines the maximum quantity of a Water Resource.
 	 */
 	public final static int WATER_RESOURCE_INITIAL_MAX_CAPACITY = 8;
+	/**
+	 * Defines the maximum quantity of a Water Resource.
+	 */
+	public final static int FUEL_RESOURCE_INITIAL_MAX_CAPACITY = 8;	
 	/**
 	 * Defines the maximum initial intensity of a Fire.
 	 */

@@ -6,7 +6,7 @@ import Enums.WorldObjectEnum;
 import World.WorldObject;
 import Config.Configurations;
 
-public class Fire {
+public class Fire implements java.io.Serializable{
 		
 		/**
 		 * The ID of the Fire.

@@ -9,7 +9,7 @@ import Config.Configurations;;
 /**
  * The class responsible for a Water Resource.
  */
-public class WaterResource {
+public class WaterResource implements java.io.Serializable{
 	
 	// Global Instance Variables:
 	

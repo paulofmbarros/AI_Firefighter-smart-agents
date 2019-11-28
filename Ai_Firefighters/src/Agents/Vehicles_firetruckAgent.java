@@ -26,7 +26,7 @@ public class Vehicles_firetruckAgent extends Agent {
 	private int coordX = 50;
 	private int coordY = 50;
 	private int waterTank = Configurations.FIRE_TRUCK_MAX_WATER_TANK_CAPACITY;
-	private int fuelTank = 10000;//Configurations.FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY;
+	private int fuelTank = Configurations.FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY;
 	private int speed = 100; // delete for real traveling speed (slow and boring!) Configurations.BASE_VEHICLE_SPEED*Configurations.FIRE_TRUCK_SPEED_MULTIPLIER;
 
 

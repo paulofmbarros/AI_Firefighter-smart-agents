@@ -5,7 +5,7 @@ import java.awt.Point;
 import Enums.WorldObjectEnum;
 
 
-public class WorldObject {
+public class WorldObject implements java.io.Serializable {
 	// Global Instance Variables:
 		
 		/**

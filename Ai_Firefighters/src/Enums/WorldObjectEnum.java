@@ -13,7 +13,8 @@ public enum WorldObjectEnum {
 		FIRE((byte) 2, "Fire"),
 		AIRCRAFT((byte) 3, "Aircraft"),
 		DRONE((byte) 4, "Drone"),
-		FIRE_TRUCK((byte) 5, "Fire Truck");
+		FIRE_TRUCK((byte) 5, "Fire Truck"),
+		FUEL_RESOURCE((byte) 6, "Fuel Resource");
 		
 		
 		// Global Instance Variables:

@@ -2,6 +2,7 @@ package Agents;
 
 import Messages.FireMessage;
 import Messages.OrderMessage;
+import Messages.ResourcesMessage;
 import Messages.StatusMessage;
 import jade.core.AID;
 import jade.core.Agent;
@@ -14,13 +15,16 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.*;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-
+import Classes.FuelResource;
+import Classes.WaterResource;
 import Config.Configurations;
+import Enums.WorldObjectEnum;
 
 
 public class FirestationAgent extends Agent {
@@ -33,15 +37,18 @@ public class FirestationAgent extends Agent {
 	//private HashMap<String, ArrayList<StatusMessage>> firesAwaitingResponse;
 	private HashMap<String, FireMessage> fireObjects;
 	private int numberOfVehicles;
-	//private ArrayList<WaterSource> waterSources; //perguntar ao worldmap onde estao as watersources
-	//private ArrayList<FuelSource> fuelSources; //perguntar ao worldmap onde estao as fuelsources
+	private ArrayList<WaterResource> waterResources;
+	private ArrayList<FuelResource> fuelResources;
 	protected void setup() {
 		this.firesToProcess = new HashMap<String, ArrayList<ACLMessage>>();
 		this.fireObjects = new HashMap<String, FireMessage>();
+		this.waterResources = new ArrayList<WaterResource>();
+		this.fuelResources = new ArrayList<FuelResource>();
 		//this.firesAwaitingResponse = new HashMap<String, ArrayList<StatusMessage>>();
 		this.numberOfVehicles = 0;
 		SequentialBehaviour sb = new SequentialBehaviour();
 		sb.addSubBehaviour(new CountNumberOfVehicles(this));
+		sb.addSubBehaviour(new GetResourcesPositions(this));
 		sb.addSubBehaviour(new ReceiveMessages(this));
 		addBehaviour(sb);
 	}
@@ -70,6 +77,36 @@ public class FirestationAgent extends Agent {
 				e.printStackTrace();
 			}
 			
+		}
+		
+	}
+	
+	class GetResourcesPositions extends OneShotBehaviour {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		public GetResourcesPositions(Agent a) {
+			super(a);
+		}
+
+		@Override
+		public void action() {
+			ResourcesMessage rm = new ResourcesMessage(waterResources,fuelResources);
+			
+			//AQUI ENVIA A MENSAGEM AO WORLDAGENT PARA OBTER WATER AND FUEL RESOURCES
+			ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+			try {
+				message.setContentObject(rm);
+				message.addReceiver(new AID("WorldAgent", AID.ISLOCALNAME));
+				send(message);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("Request of Water and Fuel Resources");
 		}
 		
 	}
@@ -283,6 +320,30 @@ public class FirestationAgent extends Agent {
 		return best;
 	}
 	
+	public Point getClosest(Point p, WorldObjectEnum worldObject) {
+		int closestDistance = 100000;
+		int closestIndex = 0;
+		switch(worldObject) {
+		case WATER_RESOURCE:
+			for(int i = 0; i < waterResources.size(); i++) {
+				if(simulateDistance((int)p.getX(),(int)p.getY(),waterResources.get(i).getWorldObject().getPositionX(),waterResources.get(i).getWorldObject().getPositionY()) < closestDistance) {
+					closestIndex = i;
+				}
+			}
+			return new Point(waterResources.get(closestIndex).getWorldObject().getPositionX(),waterResources.get(closestIndex).getWorldObject().getPositionY());
+		case FUEL_RESOURCE:
+			for(int i = 0; i < fuelResources.size(); i++) {
+				if(simulateDistance((int)p.getX(),(int)p.getY(),fuelResources.get(i).getWorldObject().getPositionX(),fuelResources.get(i).getWorldObject().getPositionY()) < closestDistance) {
+					closestIndex = i;
+				}
+			}
+			return new Point(fuelResources.get(closestIndex).getWorldObject().getPositionX(),fuelResources.get(closestIndex).getWorldObject().getPositionY());
+		default:
+			return new Point();			
+		}
+	}
+	
+	
 	class ReceiveMessages extends CyclicBehaviour {
 
 		/**
@@ -319,6 +380,15 @@ public class FirestationAgent extends Agent {
 						if(firesToProcess.get(sm.getFireId()).size() == numberOfVehicles) {
 							addBehaviour(new SendBestVehicle(myAgent, sm.getFireId()));
 						}
+					}
+					else if(content instanceof ResourcesMessage) {
+						ResourcesMessage rm = (ResourcesMessage) content;
+						waterResources = rm.getWaterResources();
+						fuelResources = rm.getFuelResources();
+						System.out.println("Resources's position received: " + rm.getFuelResources().get(0).getWorldObject().getPositionX()+ " " +  fuelResources.get(0).getWorldObject().getPositionY() +
+								"\nResources's position received: " + rm.getFuelResources().get(1).getWorldObject().getPositionX()+ " " +  fuelResources.get(1).getWorldObject().getPositionY() +
+								"\nResources's position received: " + rm.getFuelResources().get(2).getWorldObject().getPositionX()+ " " +  fuelResources.get(2).getWorldObject().getPositionY()+
+								"\nResources's position received: " + rm.getFuelResources().get(3).getWorldObject().getPositionX()+ " " +  fuelResources.get(3).getWorldObject().getPositionY());
 					}
 					break;
 				case (ACLMessage.REJECT_PROPOSAL):
