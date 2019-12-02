@@ -46,9 +46,20 @@ public abstract class Configurations {
 	public final static int AIRCRAFT_MAX_WATER_TANK_CAPACITY = 6;
 	
 	/**
+	 * Defines the maximum water tank's capacity of an Aircraft Agent.
+	 */
+	public final static int AIRCRAFT_MAX_FUEL_TANK_CAPACITY = 200;
+	
+	/**
 	 * Defines the maximum water tank's capacity of a Drone Agent.
 	 */
 	public final static int DRONE_MAX_WATER_TANK_CAPACITY = 3;
+	
+	
+	/**
+	 * Defines the maximum FUEL tank's capacity of a Drone Agent.
+	 */
+	public final static int DRONE_MAX_FUEL_TANK_CAPACITY = 100;
 	
 	/**
 	 * Defines the maximum water tank's capacity of a Fire Truck Agent.
