@@ -91,7 +91,7 @@ public class WorldAgent extends Agent{
 							
 						}
 						else {
-							System.out.println("Todos os fogos j� se encontram extintos");
+							System.out.println("Todos os fogos jรก se encontram extintos");
 						}
 					}
 					break;
@@ -240,36 +240,49 @@ public class WorldAgent extends Agent{
 		WaterResource wr3 = new WaterResource((byte) 3,wo3);
 		this.worldMap[(int) p3.getX()][(int) p3.getY()] = wr3;
 		
+		Point p4= new Point(50, 50);
+		WorldObject wo4 = new WorldObject(WorldObjectEnum.WATER_RESOURCE,p4);
+		WaterResource wr4 = new WaterResource((byte) 4,wo4);
+		this.worldMap[(int) p4.getX()][(int) p4.getY()] = wr4;
+		
 		waterResources.add(wr0);
 		waterResources.add(wr1);
 		waterResources.add(wr2);
 		waterResources.add(wr3);
+		waterResources.add(wr4);
+		
 		
 		//Fuel Resources
-		Point p4= new Point(new SecureRandom().nextInt(50),new SecureRandom().nextInt(50));
-		WorldObject wo4 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE,p4);
-		FuelResource fr0 = new FuelResource((byte) 0,wo4);
-		this.worldMap[(int) p4.getX()][(int) p4.getY()] = fr0;
-		
-		Point p5= new Point(new SecureRandom().nextInt(50),new SecureRandom().nextInt(100-50) + 50);
+		Point p5= new Point(new SecureRandom().nextInt(50),new SecureRandom().nextInt(50));
 		WorldObject wo5 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE,p5);
-		FuelResource fr1 = new FuelResource((byte) 1,wo5);
-		this.worldMap[(int) p5.getX()][(int) p5.getY()] = fr1;
+		FuelResource fr0 = new FuelResource((byte) 0,wo5);
+		this.worldMap[(int) p5.getX()][(int) p5.getY()] = fr0;
 		
-		Point p6= new Point(new SecureRandom().nextInt(100-50) + 50, new SecureRandom().nextInt(50));
+		Point p6= new Point(new SecureRandom().nextInt(50),new SecureRandom().nextInt(100-50) + 50);
 		WorldObject wo6 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE,p6);
-		FuelResource fr2 = new FuelResource((byte) 2,wo6);
-		this.worldMap[(int) p6.getX()][(int) p6.getY()] = fr2;
+		FuelResource fr1 = new FuelResource((byte) 1,wo6);
+		this.worldMap[(int) p6.getX()][(int) p6.getY()] = fr1;
 		
-		Point p7= new Point(new SecureRandom().nextInt(100-50) + 50,new SecureRandom().nextInt(100-50) + 50);
+		Point p7= new Point(new SecureRandom().nextInt(100-50) + 50, new SecureRandom().nextInt(50));
 		WorldObject wo7 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE,p7);
-		FuelResource fr3 = new FuelResource((byte) 3,wo7);
-		this.worldMap[(int) p7.getX()][(int) p3.getY()] = fr3;
+		FuelResource fr2 = new FuelResource((byte) 2,wo7);
+		this.worldMap[(int) p7.getX()][(int) p7.getY()] = fr2;
+		
+		Point p8= new Point(new SecureRandom().nextInt(100-50) + 50,new SecureRandom().nextInt(100-50) + 50);
+		WorldObject wo8 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE,p8);
+		FuelResource fr3 = new FuelResource((byte) 3,wo8);
+		this.worldMap[(int) p8.getX()][(int) p8.getY()] = fr3;
+		
+		Point p9= new Point(50,50);
+		WorldObject wo9 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE,p9);
+		FuelResource fr4 = new FuelResource((byte) 4,wo9);
+		this.worldMap[(int) p9.getX()][(int) p9.getY()] = fr4;
 		
 		fuelResources.add(fr0);
 		fuelResources.add(fr1);
 		fuelResources.add(fr2);
 		fuelResources.add(fr3);
+		fuelResources.add(fr4);
 		
 	}
 	

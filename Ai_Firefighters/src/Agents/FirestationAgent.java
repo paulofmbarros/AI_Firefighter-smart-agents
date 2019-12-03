@@ -239,111 +239,6 @@ public class FirestationAgent extends Agent {
 		
 	}
 	
-	
-	public int simulateDistance(int x1, int y1, int x2, int y2) {
-		int moves = 0;
-		while(x1 != x2 || y1 != y2) {
-			if (x1 < x2) {
-				x1++;
-			} else if (x1 > x2) {
-				x1--;
-			}
-			if (y1 < y2) {
-				y1++;
-			} else if (y1 > y2) {
-				y1--;
-			}
-			moves++;
-		}
-		return moves;
-	}
-	
-	public StatusMessage selectBestStatus(String fireId, ArrayList<StatusMessage> statuses) {
-		StatusMessage best = null;
-		double bestTime = 99999;
-		FireMessage fm = fireObjects.get(fireId);
-		
-		for(StatusMessage sm : statuses) {
-			float speed = 9999;
-			double time = 9999;
-			boolean needsWater = false;
-			boolean needsFuel = false;
-			if(sm.getVehicleType() == "FIRETRUCK") {
-				speed = Configurations.FIRE_TRUCK_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
-			}
-			else if (sm.getVehicleType() == "DRONE") {
-				speed = Configurations.DRONE_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
-			}
-			else {
-				speed = Configurations.AIRPLANE_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
-			}
-			
-			if(speed == 9999) {
-				System.out.println("Something went wrong fetching vehicle speed. Using default value (9999)");
-			}
-			
-			needsWater = sm.getWaterTank() <= 0;
-			if(needsWater) {
-				//escolhi 30 30 como as coords temporarias da bomba de agua
-				needsFuel = simulateDistance(sm.getCoordX(), sm.getCoordY(), 30, 30) + simulateDistance(30, 30, fm.getFireCoordX(), fm.getFireCoordY()) < sm.getFuelTank();
-			}
-			else {
-				needsFuel = simulateDistance(sm.getCoordX(), sm.getCoordY(), fm.getFireCoordX(), fm.getFireCoordY()) < sm.getFuelTank();
-			}
-			
-			int totalDistance = 9999;
-			
-			if(needsFuel && !needsWater) {
-				//50 50 sao as coords da estacao dos bombeiros, meter isto dinamico mais para a frente
-				totalDistance = simulateDistance(sm.getCoordX(), sm.getCoordY(), 50, 50);
-				totalDistance += simulateDistance(50, 50, fm.getFireCoordX(), fm.getFireCoordY());
-			}
-			
-			else if(needsWater && needsFuel) {
-				totalDistance = simulateDistance(sm.getCoordX(), sm.getCoordY(), 50, 50);
-				totalDistance += simulateDistance(50, 50, 30, 30);
-				totalDistance += simulateDistance(30, 30, fm.getFireCoordX(), fm.getFireCoordY());
-			}
-			else if (needsWater && !needsFuel) {
-				totalDistance = simulateDistance(sm.getCoordX(), sm.getCoordY(), 30, 30);
-				totalDistance += simulateDistance(30, 30, fm.getFireCoordX(), fm.getFireCoordY());
-			}
-			
-			time = speed * totalDistance;
-			if(time < bestTime) {
-				bestTime = time;
-				best = sm;
-			}
-			
-		}
-		
-		return best;
-	}
-	
-	public Point getClosest(Point p, WorldObjectEnum worldObject) {
-		int closestDistance = 100000;
-		int closestIndex = 0;
-		switch(worldObject) {
-		case WATER_RESOURCE:
-			for(int i = 0; i < waterResources.size(); i++) {
-				if(simulateDistance((int)p.getX(),(int)p.getY(),waterResources.get(i).getWorldObject().getPositionX(),waterResources.get(i).getWorldObject().getPositionY()) < closestDistance) {
-					closestIndex = i;
-				}
-			}
-			return new Point(waterResources.get(closestIndex).getWorldObject().getPositionX(),waterResources.get(closestIndex).getWorldObject().getPositionY());
-		case FUEL_RESOURCE:
-			for(int i = 0; i < fuelResources.size(); i++) {
-				if(simulateDistance((int)p.getX(),(int)p.getY(),fuelResources.get(i).getWorldObject().getPositionX(),fuelResources.get(i).getWorldObject().getPositionY()) < closestDistance) {
-					closestIndex = i;
-				}
-			}
-			return new Point(fuelResources.get(closestIndex).getWorldObject().getPositionX(),fuelResources.get(closestIndex).getWorldObject().getPositionY());
-		default:
-			return new Point();			
-		}
-	}
-	
-	
 	class ReceiveMessages extends CyclicBehaviour {
 
 		/**
@@ -385,10 +280,6 @@ public class FirestationAgent extends Agent {
 						ResourcesMessage rm = (ResourcesMessage) content;
 						waterResources = rm.getWaterResources();
 						fuelResources = rm.getFuelResources();
-						System.out.println("Resources's position received: " + rm.getFuelResources().get(0).getWorldObject().getPositionX()+ " " +  fuelResources.get(0).getWorldObject().getPositionY() +
-								"\nResources's position received: " + rm.getFuelResources().get(1).getWorldObject().getPositionX()+ " " +  fuelResources.get(1).getWorldObject().getPositionY() +
-								"\nResources's position received: " + rm.getFuelResources().get(2).getWorldObject().getPositionX()+ " " +  fuelResources.get(2).getWorldObject().getPositionY()+
-								"\nResources's position received: " + rm.getFuelResources().get(3).getWorldObject().getPositionX()+ " " +  fuelResources.get(3).getWorldObject().getPositionY());
 					}
 					break;
 				case (ACLMessage.REJECT_PROPOSAL):
@@ -421,4 +312,113 @@ public class FirestationAgent extends Agent {
 			}
 		}
 	}
+	
+	public int simulateDistance(int x1, int y1, int x2, int y2) {
+		int moves = 0;
+		while(x1 != x2 || y1 != y2) {
+			if (x1 < x2) {
+				x1++;
+			} else if (x1 > x2) {
+				x1--;
+			}
+			if (y1 < y2) {
+				y1++;
+			} else if (y1 > y2) {
+				y1--;
+			}
+			moves++;
+		}
+		return moves;
+	}
+	
+	public StatusMessage selectBestStatus(String fireId, ArrayList<StatusMessage> statuses) {
+		StatusMessage best = null;
+		double bestTime = 99999;
+		FireMessage fm = fireObjects.get(fireId);
+		
+		for(StatusMessage sm : statuses) {
+			float speed = 9999;
+			double time = 9999;
+			boolean needsWater = false;
+			boolean needsFuel = false;
+			Point closestWaterResourceToVehicle = new Point();
+			Point closestFuelResourceToVehicle = new Point();
+			closestWaterResourceToVehicle = getClosest(new Point(sm.getCoordX(), sm.getCoordY()), WorldObjectEnum.WATER_RESOURCE);
+			closestFuelResourceToVehicle = getClosest(new Point(sm.getCoordX(), sm.getCoordY()), WorldObjectEnum.FUEL_RESOURCE);
+			Point closestWaterResourceToFuel = getClosest(new Point((int)closestFuelResourceToVehicle.getX(),(int)closestFuelResourceToVehicle.getY()), WorldObjectEnum.WATER_RESOURCE);
+			
+			if(sm.getVehicleType() == "FIRETRUCK") {
+				speed = Configurations.FIRE_TRUCK_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
+			}
+			else if (sm.getVehicleType() == "DRONE") {
+				speed = Configurations.DRONE_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
+			}
+			else {
+				speed = Configurations.AIRPLANE_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
+			}
+			
+			if(speed == 9999) {
+				System.out.println("Something went wrong fetching vehicle speed. Using default value (9999)");
+			}
+			
+			needsWater = sm.getWaterTank() <= 0;
+			if(needsWater) {
+				needsFuel = simulateDistance(sm.getCoordX(), sm.getCoordY(), (int)closestWaterResourceToVehicle.getX(), (int)closestWaterResourceToVehicle.getY()) + simulateDistance((int)closestWaterResourceToVehicle.getX(), (int)closestWaterResourceToVehicle.getY(), fm.getFireCoordX(), fm.getFireCoordY()) < sm.getFuelTank();
+			}
+			else {
+				needsFuel = simulateDistance(sm.getCoordX(), sm.getCoordY(), fm.getFireCoordX(), fm.getFireCoordY()) < sm.getFuelTank();
+			}
+			
+			int totalDistance = 9999;
+			
+			if(needsFuel && !needsWater) {
+				totalDistance = simulateDistance(sm.getCoordX(), sm.getCoordY(), (int)closestFuelResourceToVehicle.getX(), (int)closestFuelResourceToVehicle.getY());
+				totalDistance += simulateDistance((int)closestFuelResourceToVehicle.getX(), (int)closestFuelResourceToVehicle.getY(), fm.getFireCoordX(), fm.getFireCoordY());
+			}
+			
+			else if(needsWater && needsFuel) {
+				totalDistance = simulateDistance(sm.getCoordX(), sm.getCoordY(), (int)closestFuelResourceToVehicle.getX(), (int)closestFuelResourceToVehicle.getY());
+				totalDistance += simulateDistance((int)closestFuelResourceToVehicle.getX(), (int)closestFuelResourceToVehicle.getY(), (int)closestWaterResourceToFuel.getX(), (int)closestWaterResourceToFuel.getY());
+				totalDistance += simulateDistance((int)closestWaterResourceToFuel.getX(), (int)closestWaterResourceToFuel.getY(), fm.getFireCoordX(), fm.getFireCoordY());
+			}
+			else if (needsWater && !needsFuel) {
+				totalDistance = simulateDistance(sm.getCoordX(), sm.getCoordY(), (int)closestWaterResourceToVehicle.getX(), (int)closestWaterResourceToVehicle.getY());
+				totalDistance += simulateDistance((int)closestWaterResourceToVehicle.getX(), (int)closestWaterResourceToVehicle.getY(), fm.getFireCoordX(), fm.getFireCoordY());
+			}			
+			time = speed * totalDistance;
+			if(time < bestTime) {
+				bestTime = time;
+				best = sm;
+			}
+			
+		}
+		
+		return best;
+	}
+	
+	public Point getClosest(Point p, WorldObjectEnum worldObject) {
+		int closestDistance = 100000;
+		int closestIndex = 0;
+		switch(worldObject) {
+		case WATER_RESOURCE:
+			for(int i = 0; i < waterResources.size(); i++) {
+				if(simulateDistance((int)p.getX(),(int)p.getY(),waterResources.get(i).getWorldObject().getPositionX(),waterResources.get(i).getWorldObject().getPositionY()) < closestDistance) {
+					closestIndex = i;
+				}
+			}
+			return new Point(waterResources.get(closestIndex).getWorldObject().getPositionX(),waterResources.get(closestIndex).getWorldObject().getPositionY());
+		case FUEL_RESOURCE:
+			for(int i = 0; i < fuelResources.size(); i++) {
+				if(simulateDistance((int)p.getX(),(int)p.getY(),fuelResources.get(i).getWorldObject().getPositionX(),fuelResources.get(i).getWorldObject().getPositionY()) < closestDistance) {
+					closestIndex = i;
+				}
+			}
+			return new Point(fuelResources.get(closestIndex).getWorldObject().getPositionX(),fuelResources.get(closestIndex).getWorldObject().getPositionY());
+		default:
+			return new Point();			
+		}
+	}
+	
+	
+
 }
