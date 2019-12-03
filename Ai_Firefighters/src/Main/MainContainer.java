@@ -78,6 +78,7 @@ public class MainContainer {
 		}
 		
 		a.startAgentInPlatform("FirestationAgent", "Agents.FirestationAgent");
+		a.startAgentInPlatform("VehiclesAgent", "Agents.VehiclesAgent");
 		
 		try {
 			Thread.sleep(2000);
