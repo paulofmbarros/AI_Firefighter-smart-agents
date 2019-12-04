@@ -29,14 +29,19 @@ import jade.lang.acl.UnreadableException;
 import java.util.Map;
 import java.awt.Point;
 import java.io.IOException;
-
+import jade.lang.acl.ACLMessage;
+import jess.Fact;
+import jess.RU;
+import jess.Value;
 
 public class WorldAgent extends Agent{
 	
+	 private jess.Rete jess;
 	protected void setup() {
 		currentlyActiveFires = new HashMap<Integer, Fire>();
 		this.generateResourcesPositions();
 		SequentialBehaviour sb = new SequentialBehaviour();
+		this.jess = new jess.Rete();
 		sb.addSubBehaviour(new ReceiveMessages(this));
 		addBehaviour(sb);
 	}
@@ -51,6 +56,30 @@ public class WorldAgent extends Agent{
 		public ReceiveMessages(Agent a) {
 			super(a);
 		}
+		
+		 boolean newMsg(ACLMessage msg) {
+			  try {
+			           String sender = msg.getSender().getLocalName();
+			           System.out.println("!!!!!!!!!!!!!!!!!!!!!!PAAASSSOOOOUUUUU AAAAQUUUUIIIIIII!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			           
+			           Object content= msg.getContentObject();
+			           FireMessage fm = (FireMessage) content;
+			           String fireId=fm.getFireId();
+			           int posX=fm.getFireCoordX();
+			           int posY=fm.getFireCoordY();
+			           Fact f = new Fact("Fire", jess);
+			           f.setSlotValue("sender", new Value(sender, RU.STRING));
+			           f.setSlotValue("fireId", new Value(fireId, RU.INTEGER));
+			           f.setSlotValue("posX", new Value(posX, RU.INTEGER));
+			           f.setSlotValue("posY", new Value(posY, RU.INTEGER));
+			           jess.assertFact(f);
+			           return true;
+			  	}
+				  catch(Exception ex) {
+					  return false;
+				  }
+			  	
+			      }
 
 		
 		public void action() {
@@ -76,6 +105,7 @@ public class WorldAgent extends Agent{
 						   	else {
 						   		fire = new Fire((1), fireWorldObject);
 						   	}
+						   	newMsg(msg);
 						   	// Add, effectively, the Fire to the World
 						   	addFire(fm.getFireCoordX(), fm.getFireCoordY(), fire);
 							
@@ -91,7 +121,7 @@ public class WorldAgent extends Agent{
 							
 						}
 						else {
-							System.out.println("Todos os fogos jรก se encontram extintos");
+							System.out.println("Todos os fogos jà¸£à¸� se encontram extintos");
 						}
 					}
 					break;
