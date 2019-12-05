@@ -70,6 +70,7 @@ public class MainContainer {
 		a.startAgentInPlatform("WorldAgent", "Agents.WorldAgent");
 		a.startAgentInPlatform("Firetruck1", "Agents.Vehicles_firetruckAgent");
 		
+		
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {

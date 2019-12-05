@@ -34,7 +34,6 @@ public class FirestationAgent extends Agent {
 	 */
 	private static final long serialVersionUID = 1L;
 	private HashMap<String, ArrayList<ACLMessage>> firesToProcess;
-	//private HashMap<String, ArrayList<StatusMessage>> firesAwaitingResponse;
 	private HashMap<String, FireMessage> fireObjects;
 	private int numberOfVehicles;
 	private ArrayList<WaterResource> waterResources;
