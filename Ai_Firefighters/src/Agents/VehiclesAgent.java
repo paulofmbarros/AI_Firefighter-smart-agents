@@ -1,11 +1,13 @@
 package Agents;
 
+import java.awt.Point;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
 import Classes.FuelResource;
 import Classes.WaterResource;
 import Config.Configurations;
+import Enums.WorldObjectEnum;
 import Messages.FireMessage;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
@@ -111,4 +113,40 @@ public class VehiclesAgent extends Agent {
 		}
 		return moves;
 	}
+	
+	public Point getClosest(Point p, WorldObjectEnum worldObject) {
+		int closestDistance = 100000;
+		int closestIndex = 0;
+		switch (worldObject) {
+		case WATER_RESOURCE:
+			for (int i = 0; i < waterResources.size(); i++) {
+				if (simulateDistance((int) p.getX(), (int) p.getY(),
+						waterResources.get(i).getWorldObject().getPositionX(),
+						waterResources.get(i).getWorldObject().getPositionY()) < closestDistance) {
+					closestIndex = i;
+					closestDistance = simulateDistance((int) p.getX(), (int) p.getY(),
+							waterResources.get(i).getWorldObject().getPositionX(),
+							waterResources.get(i).getWorldObject().getPositionY());
+				}
+			}
+			return new Point(waterResources.get(closestIndex).getWorldObject().getPositionX(),
+					waterResources.get(closestIndex).getWorldObject().getPositionY());
+		case FUEL_RESOURCE:
+			for (int i = 0; i < fuelResources.size(); i++) {
+				if (simulateDistance((int) p.getX(), (int) p.getY(),
+						fuelResources.get(i).getWorldObject().getPositionX(),
+						fuelResources.get(i).getWorldObject().getPositionY()) < closestDistance) {
+					closestIndex = i;
+					closestDistance = simulateDistance((int) p.getX(), (int) p.getY(),
+							waterResources.get(i).getWorldObject().getPositionX(),
+							waterResources.get(i).getWorldObject().getPositionY());
+				}
+			}
+			return new Point(fuelResources.get(closestIndex).getWorldObject().getPositionX(),
+					fuelResources.get(closestIndex).getWorldObject().getPositionY());
+		default:
+			return new Point();
+		}
+	}
+
 }

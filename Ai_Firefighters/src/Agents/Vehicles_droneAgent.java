@@ -254,41 +254,6 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 
 	}
 
-	public Point getClosest(Point p, WorldObjectEnum worldObject) {
-		int closestDistance = 100000;
-		int closestIndex = 0;
-		switch (worldObject) {
-		case WATER_RESOURCE:
-			for (int i = 0; i < waterResources.size(); i++) {
-				if (simulateDistance((int) p.getX(), (int) p.getY(),
-						waterResources.get(i).getWorldObject().getPositionX(),
-						waterResources.get(i).getWorldObject().getPositionY()) < closestDistance) {
-					closestIndex = i;
-					closestDistance = simulateDistance((int) p.getX(), (int) p.getY(),
-							waterResources.get(i).getWorldObject().getPositionX(),
-							waterResources.get(i).getWorldObject().getPositionY());
-				}
-			}
-			return new Point(waterResources.get(closestIndex).getWorldObject().getPositionX(),
-					waterResources.get(closestIndex).getWorldObject().getPositionY());
-		case FUEL_RESOURCE:
-			for (int i = 0; i < fuelResources.size(); i++) {
-				if (simulateDistance((int) p.getX(), (int) p.getY(),
-						fuelResources.get(i).getWorldObject().getPositionX(),
-						fuelResources.get(i).getWorldObject().getPositionY()) < closestDistance) {
-					closestIndex = i;
-					closestDistance = simulateDistance((int) p.getX(), (int) p.getY(),
-							waterResources.get(i).getWorldObject().getPositionX(),
-							waterResources.get(i).getWorldObject().getPositionY());
-				}
-			}
-			return new Point(fuelResources.get(closestIndex).getWorldObject().getPositionX(),
-					fuelResources.get(closestIndex).getWorldObject().getPositionY());
-		default:
-			return new Point();
-		}
-	}
-
 	class TravelToResources extends TickerBehaviour {
 
 		private static final long serialVersionUID = 1L;
@@ -339,11 +304,37 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 					fuelTank = Configurations.DRONE_MAX_FUEL_TANK_CAPACITY;
 					System.out.println(coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY
 							+ "y " + " -- " + fuelTank + "l fuel, " + waterTank + "l water");
+					isAvailable = true;
+					
+					Timer t = new Timer();
+					t.schedule(new TimerTask() {
+						@Override
+						public void run() {
+							if (isAvailable  && fuelTank < Configurations.DRONE_MAX_FUEL_TANK_CAPACITY - 10) {
+								System.out.println("Fire message not received in a while, traveling to resources");
+								myAgent.addBehaviour(new TravelToResources(myAgent));
+							}
+							t.cancel();
+						}
+					}, 5000);
 					stop();
 				} else if (!fetchingFuel && needsWater) {
 					waterTank = Configurations.DRONE_MAX_WATER_TANK_CAPACITY;
 					System.out.println(coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY
 							+ "y " + " -- " + fuelTank + "l fuel, " + waterTank + "l water");
+					isAvailable = true;
+					
+					Timer t = new Timer();
+					t.schedule(new TimerTask() {
+						@Override
+						public void run() {
+							if (isAvailable && fuelTank < Configurations.DRONE_MAX_FUEL_TANK_CAPACITY - 10) {
+								System.out.println("Fire message not received in a while, traveling to resources");
+								myAgent.addBehaviour(new TravelToResources(myAgent));
+							}
+							t.cancel();
+						}
+					}, 5000);
 					stop();
 				}
 			}
