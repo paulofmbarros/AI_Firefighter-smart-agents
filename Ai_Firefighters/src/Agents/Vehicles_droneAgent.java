@@ -174,8 +174,8 @@ public class Vehicles_droneAgent extends VehiclesAgent{
 			} else if (coordY > destY) {
 				coordY--;
 			}
-
-			System.out.println(coordX + "x, " + coordY + "y" + "   --   " + fuelTank + "l fuel, " + waterTank +"l water");
+			
+			System.out.println(coordX + "x, " + coordY + "y" + "   --   " + "dest: " +  destX + "x, " + destY + "y " + " -- " + fuelTank + "l fuel, " + waterTank +"l water");
 			if(travelingToFire || travelingToFuel || travelingToWater) {
 				fuelTank--;
 			}

@@ -347,6 +347,8 @@ public class FirestationAgent extends Agent {
 			boolean needsFuel = false;
 			Point closestWaterResourceToVehicle = new Point();
 			Point closestFuelResourceToVehicle = new Point();
+			Point closestFuelResourceToFire = new Point();
+			
 			closestWaterResourceToVehicle = getClosest(new Point(sm.getCoordX(), sm.getCoordY()),
 					WorldObjectEnum.WATER_RESOURCE);
 			closestFuelResourceToVehicle = getClosest(new Point(sm.getCoordX(), sm.getCoordY()),
@@ -354,6 +356,7 @@ public class FirestationAgent extends Agent {
 			Point closestWaterResourceToFuel = getClosest(
 					new Point((int) closestFuelResourceToVehicle.getX(), (int) closestFuelResourceToVehicle.getY()),
 					WorldObjectEnum.WATER_RESOURCE);
+			closestFuelResourceToFire = getClosest(new Point(fm.getFireCoordX(), fm.getFireCoordY()) , WorldObjectEnum.FUEL_RESOURCE);
 
 			if (sm.getVehicleType() == "FIRETRUCK") {
 				speed = Configurations.FIRE_TRUCK_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
@@ -380,7 +383,8 @@ public class FirestationAgent extends Agent {
 			}
 			
 			int totalDistance = 9999;
-
+			int distanceToFuelAfterFire = 9999;
+			
 			if (needsFuel && !needsWater) {
 				totalDistance = simulateDistance(sm.getCoordX(), sm.getCoordY(),
 						(int) closestFuelResourceToVehicle.getX(), (int) closestFuelResourceToVehicle.getY());
@@ -401,15 +405,24 @@ public class FirestationAgent extends Agent {
 						(int) closestWaterResourceToVehicle.getX(), (int) closestWaterResourceToVehicle.getY());
 				totalDistance += simulateDistance((int) closestWaterResourceToVehicle.getX(),
 						(int) closestWaterResourceToVehicle.getY(), fm.getFireCoordX(), fm.getFireCoordY());
+			} else {
+				totalDistance = simulateDistance(sm.getCoordX(), sm.getCoordY(), fm.getFireCoordX(), fm.getFireCoordY());
 			}
 			
+			
+			
+			distanceToFuelAfterFire = simulateDistance(fm.getFireCoordX(), fm.getFireCoordY(), (int) closestFuelResourceToFire.getX(), (int) closestFuelResourceToFire.getY());
+			int fuelInTankAfterFire = sm.getFuelTank() - totalDistance;
+			boolean ableToRefuelAfterFire = fuelInTankAfterFire - distanceToFuelAfterFire >= 0;
+			
 			time = speed * totalDistance;
-			if (time < bestTime) {
+			if ( ableToRefuelAfterFire && time < bestTime) {
 				bestTime = time;
 				best = sm;
 			}
-
-			//System.out.println("Total distance: " + totalDistance + "  Fuel in tank: " + sm.getFuelTank());
+			
+			System.out.println("Final fuel should be " + (sm.getFuelTank() - totalDistance));
+			System.out.println("Total distance: " + totalDistance + "  Fuel in tank: " + sm.getFuelTank());
 
 		}
 		return best;
