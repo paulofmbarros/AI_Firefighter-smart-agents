@@ -201,6 +201,9 @@ public class FirestationAgent extends Agent {
 				if (!msg.isAvailable()) {
 					i.remove();
 				}
+//				if(!willBeAbleToRefuel(msg)) {
+//					i.remove();
+//				}
 			}
 			if (statuses.size() == 0) {
 				// nenhum encontrado, fazer qqr coisa sobre isto
@@ -213,7 +216,6 @@ public class FirestationAgent extends Agent {
 				}
 				addBehaviour(new MessageAllVehicles(myAgent, fireObjects.get(fireId)));
 			} else {
-				// firesAwaitingResponse.put(fireId, statuses);
 				StatusMessage best = selectBestStatus(fireId, statuses);
 				if (best == null) {
 					// nenhum veiculo pode ir apagar o fogo...
@@ -370,13 +372,13 @@ public class FirestationAgent extends Agent {
 				needsFuel = simulateDistance(sm.getCoordX(), sm.getCoordY(), (int) closestWaterResourceToVehicle.getX(),
 						(int) closestWaterResourceToVehicle.getY())
 						+ simulateDistance((int) closestWaterResourceToVehicle.getX(),
-								(int) closestWaterResourceToVehicle.getY(), fm.getFireCoordX(), fm.getFireCoordY()) < sm
+								(int) closestWaterResourceToVehicle.getY(), fm.getFireCoordX(), fm.getFireCoordY()) > sm
 										.getFuelTank();
 			} else {
 				needsFuel = simulateDistance(sm.getCoordX(), sm.getCoordY(), fm.getFireCoordX(),
-						fm.getFireCoordY()) < sm.getFuelTank();
+						fm.getFireCoordY()) > sm.getFuelTank();
 			}
-
+			
 			int totalDistance = 9999;
 
 			if (needsFuel && !needsWater) {
@@ -400,16 +402,16 @@ public class FirestationAgent extends Agent {
 				totalDistance += simulateDistance((int) closestWaterResourceToVehicle.getX(),
 						(int) closestWaterResourceToVehicle.getY(), fm.getFireCoordX(), fm.getFireCoordY());
 			}
+			
 			time = speed * totalDistance;
 			if (time < bestTime) {
 				bestTime = time;
 				best = sm;
 			}
 
-			// System.out.println("Total distance: " + "Fuel in tank: " + sm.getFuelTank());
+			//System.out.println("Total distance: " + totalDistance + "  Fuel in tank: " + sm.getFuelTank());
 
 		}
-
 		return best;
 	}
 
