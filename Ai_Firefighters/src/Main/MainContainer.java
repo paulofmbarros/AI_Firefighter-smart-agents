@@ -68,7 +68,7 @@ public class MainContainer {
 		// Name of the Agent + Class Path of Agent's source Code
 		
 		a.startAgentInPlatform("WorldAgent", "Agents.WorldAgent");
-		a.startAgentInPlatform("Firetruck1", "Agents.Vehicles_firetruckAgent");
+		a.startAgentInPlatform("Firetruck1", "Agents.Vehicles_droneAgent");
 		
 		
 		try {
@@ -89,8 +89,8 @@ public class MainContainer {
 		}
 		
 		a.startAgentInPlatform("FireStarterAgent", "Agents.FireStarterAgent");
-		a.startAgentInPlatform("FireStarterAgent2", "Agents.FireStarterAgent");
-		a.startAgentInPlatform("FireStarterAgent3", "Agents.FireStarterAgent");
+		//a.startAgentInPlatform("FireStarterAgent2", "Agents.FireStarterAgent");
+		//a.startAgentInPlatform("FireStarterAgent3", "Agents.FireStarterAgent");
 	}
 
 }

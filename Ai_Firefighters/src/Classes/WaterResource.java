@@ -14,6 +14,11 @@ public class WaterResource implements java.io.Serializable{
 	// Global Instance Variables:
 	
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * The ID of the Water Resource.
 	 */
 	private byte id;

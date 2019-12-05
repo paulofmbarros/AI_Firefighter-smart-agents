@@ -25,7 +25,7 @@ public class Vehicles_droneAgent extends VehiclesAgent{
 		 coordX = 50;
 		 coordY = 50;
 		 waterTank = Configurations.DRONE_MAX_WATER_TANK_CAPACITY;
-		 fuelTank = Configurations.DRONE_MAX_WATER_TANK_CAPACITY;
+		 fuelTank = Configurations.DRONE_MAX_FUEL_TANK_CAPACITY;
 		 speed = 100; // delete for real traveling speed (slow and boring!) Configurations.BASE_VEHICLE_SPEED*Configurations.FIRE_TRUCK_SPEED_MULTIPLIER;
 	}
 	
