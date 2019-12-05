@@ -1,7 +1,10 @@
 package Agents;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 
+import Classes.FuelResource;
+import Classes.WaterResource;
 import Config.Configurations;
 import Messages.FireMessage;
 import jade.core.Agent;
@@ -12,6 +15,8 @@ import jade.lang.acl.ACLMessage;
 public class VehiclesAgent extends Agent {
 	private static final long serialVersionUID = 1L;
 	protected boolean isAvailable = true;
+	protected ArrayList<WaterResource> waterResources;
+	protected ArrayList<FuelResource> fuelResources;
 	protected int coordX = 0;
 	protected int coordY = 0;
 	protected int waterTank = 0;

@@ -53,13 +53,13 @@ public abstract class Configurations {
 	/**
 	 * Defines the maximum water tank's capacity of a Drone Agent.
 	 */
-	public final static int DRONE_MAX_WATER_TANK_CAPACITY = 3;
+	public final static int DRONE_MAX_WATER_TANK_CAPACITY = 1;
 	
 	
 	/**
 	 * Defines the maximum FUEL tank's capacity of a Drone Agent.
 	 */
-	public final static int DRONE_MAX_FUEL_TANK_CAPACITY = 3;
+	public final static int DRONE_MAX_FUEL_TANK_CAPACITY = 100;
 	
 	/**
 	 * Defines the maximum water tank's capacity of a Fire Truck Agent.

@@ -129,7 +129,7 @@ public class WorldAgent extends Agent {
 						ACLMessage message = new ACLMessage(ACLMessage.INFORM);
 						try {
 							message.setContentObject(rm);
-							message.addReceiver(new AID("FirestationAgent", AID.ISLOCALNAME));
+							message.addReceiver(msg.getSender());
 							send(message);
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
