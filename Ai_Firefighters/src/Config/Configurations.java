@@ -53,7 +53,7 @@ public abstract class Configurations {
 	/**
 	 * Defines the maximum water tank's capacity of a Drone Agent.
 	 */
-	public final static int DRONE_MAX_WATER_TANK_CAPACITY = 1;
+	public final static int DRONE_MAX_WATER_TANK_CAPACITY = 9;
 	
 	
 	/**
@@ -97,7 +97,7 @@ public abstract class Configurations {
 
 	public static final float DRONE_SPEED_MULTIPLIER = (float) 0.3;
 
-	public static final float AIRPLANE_SPEED_MULTIPLIER = (float) 0.5;
+	public static final float AIRCRAFT_SPEED_MULTIPLIER = (float) 0.5;
 	
 	
 }

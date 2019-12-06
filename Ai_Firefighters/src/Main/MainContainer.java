@@ -68,9 +68,9 @@ public class MainContainer {
 		// Name of the Agent + Class Path of Agent's source Code
 		
 		a.startAgentInPlatform("WorldAgent", "Agents.WorldAgent");
-		a.startAgentInPlatform("Firetruck1", "Agents.Vehicles_droneAgent");
-		
-		
+		a.startAgentInPlatform("Firetruck1", "Agents.Vehicles_firetruckAgent");
+		a.startAgentInPlatform("Drone1", "Agents.Vehicles_droneAgent");
+		a.startAgentInPlatform("Aircraft1", "Agents.Vehicles_aircraftAgent");
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
@@ -89,8 +89,15 @@ public class MainContainer {
 		}
 		
 		a.startAgentInPlatform("FireStarterAgent", "Agents.FireStarterAgent");
-		//a.startAgentInPlatform("FireStarterAgent2", "Agents.FireStarterAgent");
-		//a.startAgentInPlatform("FireStarterAgent3", "Agents.FireStarterAgent");
+		a.startAgentInPlatform("FireStarterAgent2", "Agents.FireStarterAgent");
+		a.startAgentInPlatform("FireStarterAgent3", "Agents.FireStarterAgent");
+		a.startAgentInPlatform("FireStarterAgent4", "Agents.FireStarterAgent");
+		a.startAgentInPlatform("FireStarterAgent5", "Agents.FireStarterAgent");
+		a.startAgentInPlatform("FireStarterAgent6", "Agents.FireStarterAgent");
+		a.startAgentInPlatform("FireStarterAgent7", "Agents.FireStarterAgent");
+		a.startAgentInPlatform("FireStarterAgent8", "Agents.FireStarterAgent");
+		a.startAgentInPlatform("FireStarterAgent9", "Agents.FireStarterAgent");
+		a.startAgentInPlatform("FireStarterAgent10", "Agents.FireStarterAgent");
 	}
 
 }

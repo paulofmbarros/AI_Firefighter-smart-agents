@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import Agents.FirestationAgent.GetResourcesPositions;
 import Classes.FuelResource;
 import Classes.WaterResource;
 import Config.Configurations;
@@ -27,17 +26,22 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 
-public class Vehicles_droneAgent extends VehiclesAgent {
+public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
-
-	public Vehicles_droneAgent() {
-		isAvailable = true;
-		coordX = 50;
-		coordY = 50;
-		waterTank = Configurations.DRONE_MAX_WATER_TANK_CAPACITY;
-		fuelTank = Configurations.DRONE_MAX_FUEL_TANK_CAPACITY;
-		speed = 100; // delete for real traveling speed (slow and boring!)
-						// Configurations.BASE_VEHICLE_SPEED*Configurations.FIRE_TRUCK_SPEED_MULTIPLIER;
+	private static final String vehicleEnum = "DRONE"; // MUDAR AQUI
+	
+	public Vehicles_droneAgent(){ //MUDAR AQUI
+		isAvailable=true;
+		coordX=50;
+		coordY=50;
+		waterTank = maxWater = Configurations.DRONE_MAX_WATER_TANK_CAPACITY; // MUDAR AQUI
+		fuelTank = maxFuel = Configurations.DRONE_MAX_FUEL_TANK_CAPACITY;  // MUDAR AQUI
+				
+		speed=100;
+		
 		waterResources = new ArrayList<WaterResource>();
 		fuelResources = new ArrayList<FuelResource>();
 	}
@@ -47,14 +51,15 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 		sb.addSubBehaviour(new GetResourcesPositions(this));
 		sb.addSubBehaviour(new RegisterInDF(this));
 		sb.addSubBehaviour(new ReceiveMessages(this));
+		localName = this.getLocalName();
 		addBehaviour(sb);
-		System.out.println("Vehicle agent started");
+		System.out.println(localName + ": Vehicle agent started");
 	}
-
+	
 	public int getSpeed() {
 		return speed;
 	}
-
+	
 	class GetResourcesPositions extends OneShotBehaviour {
 
 		/**
@@ -86,6 +91,7 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 
 	class RegisterInDF extends OneShotBehaviour {
 
+
 		/**
 		 * 
 		 */
@@ -98,8 +104,6 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 		public void action() {
 
 			ServiceDescription sd = new ServiceDescription();
-
-			// ver se o nome deve permanecer
 			sd.setType("VEHICLE_AGENT");
 			sd.setName(getName());
 			sd.setOwnership("AI2019");
@@ -113,13 +117,17 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 				}
 				DFService.register(myAgent, dfd);
 			} catch (Exception ex) {
-				System.out.println("Vehicle failed registering with DF! Shutting down...");
+				System.out.println(localName + ": Vehicle failed registering with DF! Shutting down...");
 				ex.printStackTrace();
 				doDelete();
 			}
 		}
 	}
-
+	
+	
+	
+	
+	
 	class TravelToFireTicker extends TickerBehaviour {
 
 		/**
@@ -144,24 +152,24 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 			}
 
 			if (order != null) {
-				System.out.println(
+				System.out.println(localName + ": " +
 						coordX + "x, " + coordY + "y" + "   --   " + fuelTank + "l fuel, " + waterTank + "l water");
 				if (waterTank <= 0) {
 					if (fuelTank <= simulateDistance(coordX, coordY, 30, 30)
 							+ simulateDistance(30, 30, order.getFireCoordX(), order.getFireCoordY())) {
-						System.out.println("No water no fuel");
+						System.out.println(localName + ": No water no fuel");
 						this.travelingToWater = true;
 						this.travelingToFire = true;
 					} else {
-						System.out.println("No water, has fuel");
+						System.out.println(localName + ": No water, has fuel");
 						this.travelingToWater = true;
 					}
 				} else if (fuelTank <= simulateDistance(coordX, coordY, order.getFireCoordX(), order.getFireCoordY())) {
-					System.out.println("No fuel, has water");
+					System.out.println(localName + ": No fuel, has water");
 					this.travelingToFuel = true;
 				} else {
 					System.out.println(
-							"Has everything - " + fuelTank + " in fuel tank, " + waterTank + " in water tank. Cost is "
+							localName + ": Has everything - " + fuelTank + " in fuel tank, " + waterTank + " in water tank. Cost is "
 									+ simulateDistance(coordX, coordY, order.getFireCoordX(), order.getFireCoordY())
 									+ " moves");
 					travelingToFire = true;
@@ -175,7 +183,7 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 		protected void onTick() {
 			if (travelingToWater && travelingToFuel) {
 				if (destX != 50 && destY != 50 && tick != 0) {
-					System.out.println("Traveling to " + destX + "x, " + destY + "y");
+					System.out.println(localName + ": Traveling to " + destX + "x, " + destY + "y");
 				}
 				this.destX = 50;
 				this.destY = 50;
@@ -185,7 +193,7 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 				}
 			} else if (travelingToWater) {
 				if (destX != 30 && destY != 30 && tick != 0) {
-					System.out.println("Traveling to " + destX + "x, " + destY + "y");
+					System.out.println(localName + ": Traveling to " + destX + "x, " + destY + "y");
 				}
 				this.destX = 30;
 				this.destY = 30;
@@ -195,7 +203,7 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 				}
 			} else if (travelingToFire) {
 				if (destX != order.getFireCoordX() && destY != order.getFireCoordY() && tick != 0) {
-					System.out.println("Traveling to " + destX + "x, " + destY + "y");
+					System.out.println(localName + ": Traveling to " + destX + "x, " + destY + "y");
 				}
 				this.destX = order.getFireCoordX();
 				this.destY = order.getFireCoordY();
@@ -216,12 +224,12 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 				coordY--;
 			}
 
-			System.out.println(coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY + "y "
+			System.out.println(localName + ": " + coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY + "y "
 					+ " -- " + fuelTank + "l fuel, " + waterTank + "l water");
 			if (travelingToFire || travelingToFuel || travelingToWater) {
 				fuelTank--;
 			} else {
-				System.out.println("Traveling done. Final stats: " + waterTank + " liters of water, " + fuelTank
+				System.out.println(localName + ": Traveling done. Final stats: " + waterTank + " liters of water, " + fuelTank
 						+ " liters of fuel");
 				try {
 					ACLMessage msg = new ACLMessage(ACLMessage.CONFIRM);
@@ -231,7 +239,7 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 					send(msg);
 					isAvailable = true;
 				} catch (IOException | UnreadableException e) {
-					System.out.println("Erro ao enviar msg de confirmacao de fogo apagado");
+					System.out.println(localName + ": Erro ao enviar msg de confirmacao de fogo apagado");
 					e.printStackTrace();
 				}
 
@@ -242,7 +250,7 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 					@Override
 					public void run() {
 						if (isAvailable) {
-							System.out.println("Fire message not received in a while, traveling to resources");
+							System.out.println(localName + ": Fire message not received in a while, traveling to resources");
 							myAgent.addBehaviour(new TravelToResources(myAgent));
 						}
 						t.cancel();
@@ -251,9 +259,8 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 				stop();
 			}
 		}
-
 	}
-
+	
 	class TravelToResources extends TickerBehaviour {
 
 		private static final long serialVersionUID = 1L;
@@ -288,21 +295,21 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 
 			fuelTank--;
 
-			System.out.println(coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY + "y "
+			System.out.println(localName + ": " + coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY + "y "
 					+ " -- " + fuelTank + "l fuel, " + waterTank + "l water");
 			if (coordX == destX && coordY == destY) {
 
 				if (fetchingFuel && needsWater) {
-					fuelTank = Configurations.DRONE_MAX_FUEL_TANK_CAPACITY;
+					fuelTank = maxFuel;
 					fetchingFuel = false;
 					closestWaterResource = getClosest(new Point(coordX, coordY), WorldObjectEnum.WATER_RESOURCE);
 					destX = (int) closestWaterResource.getX();
 					destY = (int) closestWaterResource.getY();
-					System.out.println(coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY
+					System.out.println(localName + ": " + coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY
 							+ "y " + " -- " + fuelTank + "l fuel, " + waterTank + "l water");
 				} else if (fetchingFuel && !needsWater) {
-					fuelTank = Configurations.DRONE_MAX_FUEL_TANK_CAPACITY;
-					System.out.println(coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY
+					fuelTank = maxFuel;
+					System.out.println(localName + ": " + coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY
 							+ "y " + " -- " + fuelTank + "l fuel, " + waterTank + "l water");
 					isAvailable = true;
 					
@@ -310,8 +317,8 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 					t.schedule(new TimerTask() {
 						@Override
 						public void run() {
-							if (isAvailable  && fuelTank < Configurations.DRONE_MAX_FUEL_TANK_CAPACITY - 10) {
-								System.out.println("Fire message not received in a while, traveling to resources");
+							if (isAvailable  && fuelTank < maxFuel - 10) {
+								System.out.println(localName + ": Fire message not received in a while, traveling to resources");
 								myAgent.addBehaviour(new TravelToResources(myAgent));
 							}
 							t.cancel();
@@ -319,8 +326,8 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 					}, 5000);
 					stop();
 				} else if (!fetchingFuel && needsWater) {
-					waterTank = Configurations.DRONE_MAX_WATER_TANK_CAPACITY;
-					System.out.println(coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY
+					waterTank = maxWater;
+					System.out.println(localName + ": " + coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY
 							+ "y " + " -- " + fuelTank + "l fuel, " + waterTank + "l water");
 					isAvailable = true;
 					
@@ -328,8 +335,8 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 					t.schedule(new TimerTask() {
 						@Override
 						public void run() {
-							if (isAvailable && fuelTank < Configurations.DRONE_MAX_FUEL_TANK_CAPACITY - 10) {
-								System.out.println("Fire message not received in a while, traveling to resources");
+							if (isAvailable && fuelTank < maxFuel - 10) {
+								System.out.println(localName + ": Fire message not received in a while, traveling to resources");
 								myAgent.addBehaviour(new TravelToResources(myAgent));
 							}
 							t.cancel();
@@ -341,82 +348,15 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 		}
 
 	}
-
-	class TravelToFire extends OneShotBehaviour {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		private ACLMessage request;
-
-		public TravelToFire(Agent a, ACLMessage request) {
-			super(a);
-			this.request = request;
-		}
-
-		@Override
-		public void action() {
-			OrderMessage om = null;
-			try {
-				om = ((OrderMessage) request.getContentObject());
-			} catch (UnreadableException e) {
-				e.printStackTrace();
-			}
-			if (waterTank <= 0) {
-				if (fuelTank <= simulateDistance(coordX, coordY, 30, 30)
-						+ simulateDistance(30, 30, om.getFireCoordX(), om.getFireCoordY())) {
-					System.out.println("No water no fuel");
-					travel(50, 50);
-					fuelTank = Configurations.DRONE_MAX_FUEL_TANK_CAPACITY;
-					travel(30, 30);
-					waterTank = Configurations.DRONE_MAX_WATER_TANK_CAPACITY;
-					travel(om.getFireCoordX(), om.getFireCoordY());
-					waterTank--;
-				} else {
-					System.out.println("No water, has fuel");
-					travel(30, 30);
-					waterTank = Configurations.DRONE_MAX_WATER_TANK_CAPACITY;
-					travel(om.getFireCoordX(), om.getFireCoordY());
-					waterTank--;
-				}
-			} else if (fuelTank <= simulateDistance(coordX, coordY, om.getFireCoordX(), om.getFireCoordY())) {
-				System.out.println("No fuel, has water");
-				travel(50, 50);
-				fuelTank = Configurations.DRONE_MAX_FUEL_TANK_CAPACITY;
-				travel(om.getFireCoordX(), om.getFireCoordY());
-				waterTank--;
-			} else {
-				System.out.println(
-						"Has everything - " + fuelTank + " in fuel tank, " + waterTank + " in water tank. Cost is "
-								+ simulateDistance(coordX, coordY, om.getFireCoordX(), om.getFireCoordY()) + " moves");
-				travel(om.getFireCoordX(), om.getFireCoordY());
-				waterTank--;
-			}
-			System.out.println(
-					"Traveling done. Final stats: " + waterTank + " liters of water, " + fuelTank + " liters of fuel");
-
-			try {
-				ACLMessage msg = new ACLMessage(ACLMessage.CONFIRM);
-				msg.setContentObject((OrderMessage) request.getContentObject());
-				msg.addReceiver(request.getSender());
-				// A enviar a mensagem a dizer que apagou o fogo ao Firestation
-				send(msg);
-				isAvailable = true;
-			} catch (IOException | UnreadableException e) {
-				System.out.println("Erro ao enviar msg de confirmacao de fogo apagado");
-				e.printStackTrace();
-			}
-		}
-	}
-
+	
+	
 	class CheckCanTravel extends OneShotBehaviour {
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 		private ACLMessage request;
-
+		
 		public CheckCanTravel(Agent a, ACLMessage request) {
 			super(a);
 			this.request = request;
@@ -425,22 +365,22 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 		@Override
 		public void action() {
 			String fireId;
-
-			if (isAvailable) {
-				// can travel
+			
+			if(isAvailable) {
+				//can travel
 				isAvailable = false;
 				ACLMessage msg = new ACLMessage(ACLMessage.ACCEPT_PROPOSAL);
 				msg.addReceiver(request.getSender());
 				send(msg);
-
-				// add behaviour travel to fire and put it out
+				
+				//add behaviour travel to fire and put it out
 				addBehaviour(new TravelToFireTicker(myAgent, request));
-			} else {
+			}
+			else {
 				try {
 					fireId = ((OrderMessage) request.getContentObject()).getFireId();
 					ACLMessage msg = new ACLMessage(ACLMessage.REJECT_PROPOSAL);
-					StatusMessage sm = new StatusMessage(coordX, coordY, fireId, myAgent.getAID(), isAvailable, "DRONE",
-							fuelTank, waterTank);
+					StatusMessage sm = new StatusMessage(coordX, coordY, fireId, myAgent.getAID(), isAvailable, vehicleEnum, fuelTank, waterTank);
 					msg.setContentObject(sm);
 					msg.addReceiver(request.getSender());
 					send(msg);
@@ -450,35 +390,36 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 			}
 		}
 	}
-
+	
 	class ReceiveMessages extends CyclicBehaviour {
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-
+		
 		public ReceiveMessages(Agent a) {
 			super(a);
 		}
 
+		
 		public void action() {
 			ACLMessage msg = receive();
-			if (msg == null) {
+			if(msg == null) {
 				block();
 				return;
 			}
-
+			
 			try {
 				Object content = msg.getContentObject();
-				switch (msg.getPerformative()) {
+				switch(msg.getPerformative()) {
 				case (ACLMessage.REQUEST):
-					if (content instanceof FireMessage) {
+					if(content instanceof FireMessage) {
 						FireMessage fm = (FireMessage) content;
-						System.out.println("Get status msg received in vehicle. " + "Coords of corresponding fire: X: "
+						System.out.println(localName + ": Get status msg received in vehicle. "
+								+ "Coords of corresponding fire: X: "
 								+ "" + fm.getFireCoordX() + " Y: " + fm.getFireCoordY());
-						StatusMessage sm = new StatusMessage(coordX, coordY, fm.getFireId(), myAgent.getAID(),
-								isAvailable, "DRONE", fuelTank, waterTank);
+						StatusMessage sm = new StatusMessage(coordX, coordY, fm.getFireId(), myAgent.getAID(), isAvailable, vehicleEnum, fuelTank, waterTank);
 						ACLMessage reply = new ACLMessage(ACLMessage.INFORM);
 						reply.setContentObject(sm);
 						reply.addReceiver(msg.getSender());
@@ -486,7 +427,7 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 					}
 					break;
 				case (ACLMessage.PROPOSE):
-					if (content instanceof OrderMessage) {
+					if(content instanceof OrderMessage) {
 						addBehaviour(new CheckCanTravel(myAgent, msg));
 					}
 					break;
@@ -495,18 +436,17 @@ public class Vehicles_droneAgent extends VehiclesAgent {
 						ResourcesMessage rm = (ResourcesMessage) content;
 						waterResources = rm.getWaterResources();
 						fuelResources = rm.getFuelResources();
-//						for(WaterResource wr : waterResources) {
-//							System.out.println(wr.getWorldObject().getPositionX() + " " + wr.getWorldObject().getPositionY());
-//						}
 					}
 					break;
 				default:
 					break;
 				}
-			} catch (Exception e) {
+			}
+			catch(Exception e) {
 				System.out.println(e);
 			}
 		}
 	}
+	
 
 }

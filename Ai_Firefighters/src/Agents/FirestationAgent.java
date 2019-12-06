@@ -364,7 +364,7 @@ public class FirestationAgent extends Agent {
 			} else if (sm.getVehicleType() == "DRONE") {
 				speed = Configurations.DRONE_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
 			} else {
-				speed = Configurations.AIRPLANE_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
+				speed = Configurations.AIRCRAFT_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
 			}
 
 			if (speed == 9999) {

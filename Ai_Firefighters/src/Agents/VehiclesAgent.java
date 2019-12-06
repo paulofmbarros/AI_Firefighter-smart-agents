@@ -23,6 +23,9 @@ public class VehiclesAgent extends Agent {
 	protected int coordY = 0;
 	protected int waterTank = 0;
 	protected int fuelTank = 0;
+	protected int maxWater = 0;
+	protected int maxFuel = 0;
+	protected String localName = "";
 	protected int speed = 0; // delete for real traveling speed (slow and boring!) Configurations.BASE_VEHICLE_SPEED*Configurations.FIRE_TRUCK_SPEED_MULTIPLIER;
 
 	protected void setup() {
