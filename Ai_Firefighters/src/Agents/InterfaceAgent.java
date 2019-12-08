@@ -7,16 +7,21 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+import Classes.Fire;
 import Classes.FuelResource;
 import Classes.WaterResource;
+import Enums.WorldObjectEnum;
 import Messages.ResourcesMessage;
-
+import World.WorldObject;
 import jade.core.*;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.*;
@@ -74,6 +79,7 @@ public class InterfaceAgent extends Agent{
            this.addBehaviour(new InfoAircraftState());
            this.addBehaviour(new InfoDroneState());
            this.addBehaviour(new FireExtinguished());
+           this.addBehaviour(new InfoFirestate_fixattempt());
            
             
         } catch (FIPAException e) {
@@ -283,6 +289,43 @@ public class InterfaceAgent extends Agent{
 				int y = Integer.parseInt(content_split[1]);
 				Point pos = new Point(x,y);
 				firesGUI.put(fire, pos);
+			}else 
+				block();
+		}
+	}
+	
+	class InfoFirestate_fixattempt extends CyclicBehaviour {
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void action() {
+			MessageTemplate mt1 = MessageTemplate.MatchPerformative(ACLMessage.INFORM);
+			MessageTemplate mt2 = MessageTemplate.MatchOntology("info-allfires");
+			MessageTemplate mt3 = MessageTemplate.and(mt1, mt2);
+
+			ACLMessage msg = receive(mt3);
+
+			if(msg != null) {
+				try {
+					System.out.println("CLEANUP BEHAVIOUR CALLED!!");
+					HashMap<Integer, Fire> firesInWorld = (HashMap<Integer, Fire>) msg.getContentObject();
+					//Point pp = new Point(1,1);
+					//Fire test = new Fire(1234, new WorldObject(WorldObjectEnum.FIRE, pp));
+					//firesInWorld.put(1234, test);
+					ArrayList<Point> firesInWorldList = new ArrayList<Point>();
+					ArrayList<Point> firesInInterfaceList = new ArrayList<Point>(firesGUI.values());				
+					for(Fire f : firesInWorld.values()) {
+						firesInWorldList.add(new Point(f.getWorldObject().getPositionX(), f.getWorldObject().getPositionY()));
+					}
+					
+					firesInInterfaceList.removeAll(firesInWorldList);
+					for(Point p : firesInInterfaceList) {
+						firesGUI.values().removeAll(Collections.singleton(p));
+					}
+					
+				} catch (UnreadableException e) {
+					e.printStackTrace();
+				}
 			}else 
 				block();
 		}

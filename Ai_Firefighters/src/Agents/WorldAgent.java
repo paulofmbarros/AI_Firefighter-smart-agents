@@ -26,6 +26,7 @@ import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
+import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import java.util.Map;
@@ -77,9 +78,35 @@ public class WorldAgent extends Agent {
 		this.generateResourcesPositions();
 		SequentialBehaviour sb = new SequentialBehaviour();
 		this.jess = new jess.Rete();
+		addBehaviour(new InformFiresInterface(this, 120000));
 		sb.addSubBehaviour(new InformInterfaceBehaviour(this));
 		sb.addSubBehaviour(new ReceiveMessages(this));
 		addBehaviour(sb);
+	}
+	
+	class InformFiresInterface extends TickerBehaviour {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		public InformFiresInterface(Agent a, int timeout) {
+			super(a, timeout);
+		}
+		@Override
+		protected void onTick() {
+			try {
+				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+				msg.setOntology("info-allfires");
+				msg.setContentObject(currentlyActiveFires);
+				msg.addReceiver(new AID("Interface", AID.ISLOCALNAME));
+				myAgent.send(msg);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 	
 	class ReceiveMessages extends CyclicBehaviour {
