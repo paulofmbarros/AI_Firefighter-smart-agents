@@ -35,8 +35,8 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 	
 	public Vehicles_droneAgent(){ //MUDAR AQUI
 		isAvailable=true;
-		coordX=50;
-		coordY=50;
+		coordX=200;
+		coordY=200;
 		waterTank = maxWater = Configurations.DRONE_MAX_WATER_TANK_CAPACITY; // MUDAR AQUI
 		fuelTank = maxFuel = Configurations.DRONE_MAX_FUEL_TANK_CAPACITY;  // MUDAR AQUI
 				
@@ -48,8 +48,9 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 
 	protected void setup() {
 		SequentialBehaviour sb = new SequentialBehaviour();
-		sb.addSubBehaviour(new GetResourcesPositions(this));
 		sb.addSubBehaviour(new RegisterInDF(this));
+		sb.addSubBehaviour(new InformInterfaceBehaviour(this));
+		sb.addSubBehaviour(new GetResourcesPositions(this));
 		sb.addSubBehaviour(new ReceiveMessages(this));
 		localName = this.getLocalName();
 		addBehaviour(sb);
@@ -58,35 +59,6 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 	
 	public int getSpeed() {
 		return speed;
-	}
-	
-	class GetResourcesPositions extends OneShotBehaviour {
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public GetResourcesPositions(Agent a) {
-			super(a);
-		}
-
-		@Override
-		public void action() {
-			ResourcesMessage rm = new ResourcesMessage(waterResources, fuelResources);
-
-			// AQUI ENVIA A MENSAGEM AO WORLDAGENT PARA OBTER WATER AND FUEL RESOURCES
-			ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
-			try {
-				message.setContentObject(rm);
-				message.addReceiver(new AID("WorldAgent", AID.ISLOCALNAME));
-				send(message);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
 	}
 
 	class RegisterInDF extends OneShotBehaviour {
@@ -228,6 +200,7 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 					+ " -- " + fuelTank + "l fuel, " + waterTank + "l water");
 			if (travelingToFire || travelingToFuel || travelingToWater) {
 				fuelTank--;
+				myAgent.addBehaviour(new InformInterfaceBehaviour(myAgent));
 			} else {
 				System.out.println(localName + ": Traveling done. Final stats: " + waterTank + " liters of water, " + fuelTank
 						+ " liters of fuel");
@@ -294,7 +267,7 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 			}
 
 			fuelTank--;
-
+			myAgent.addBehaviour(new InformInterfaceBehaviour(myAgent));
 			System.out.println(localName + ": " + coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY + "y "
 					+ " -- " + fuelTank + "l fuel, " + waterTank + "l water");
 			if (coordX == destX && coordY == destY) {
@@ -391,6 +364,56 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 		}
 	}
 	
+	class InformInterfaceBehaviour extends OneShotBehaviour {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public InformInterfaceBehaviour(Agent a) {
+			super(a);
+		}
+
+		@Override
+		public void action() {
+			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+			msg.setOntology("info-drone");
+			msg.setContent(coordX + "::" + coordY +"::");
+			msg.addReceiver(new AID("Interface", AID.ISLOCALNAME));
+			send(msg);
+		}
+	}
+	
+	class GetResourcesPositions extends OneShotBehaviour {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public GetResourcesPositions(Agent a) {
+			super(a);
+		}
+
+		@Override
+		public void action() {
+			ResourcesMessage rm = new ResourcesMessage(waterResources, fuelResources);
+
+			// AQUI ENVIA A MENSAGEM AO WORLDAGENT PARA OBTER WATER AND FUEL RESOURCES
+			ACLMessage message = new ACLMessage(ACLMessage.REQUEST);
+			try {
+				message.setContentObject(rm);
+				message.addReceiver(new AID("WorldAgent", AID.ISLOCALNAME));
+				send(message);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("Request of Water and Fuel Resources");
+		}
+
+	}
+	
 	class ReceiveMessages extends CyclicBehaviour {
 
 		/**
@@ -405,7 +428,7 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 		
 		public void action() {
 			ACLMessage msg = receive();
-			if(msg == null) {
+			if(msg == null  || msg.getOntology() == "info-drone") {
 				block();
 				return;
 			}

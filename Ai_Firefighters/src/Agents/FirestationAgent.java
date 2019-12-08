@@ -45,13 +45,48 @@ public class FirestationAgent extends Agent {
 		this.fuelResources = new ArrayList<FuelResource>();
 		// this.firesAwaitingResponse = new HashMap<String, ArrayList<StatusMessage>>();
 		this.numberOfVehicles = 0;
-		SequentialBehaviour sb = new SequentialBehaviour();
+		SequentialBehaviour sb = new SequentialBehaviour();		
+		sb.addSubBehaviour(new RegisterInDF(this));
+		sb.addSubBehaviour(new InformInterfaceBehaviour(this));
 		sb.addSubBehaviour(new CountNumberOfVehicles(this));
 		sb.addSubBehaviour(new GetResourcesPositions(this));
 		sb.addSubBehaviour(new ReceiveMessages(this));
 		addBehaviour(sb);
 	}
+	class RegisterInDF extends OneShotBehaviour {
 
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public RegisterInDF(Agent a) {
+			super(a);
+		}
+
+		public void action() {
+
+			ServiceDescription sd = new ServiceDescription();
+			sd.setType("FIRESTATION_AGENT");
+			sd.setName(getName());
+			sd.setOwnership("AI2019");
+			DFAgentDescription dfd = new DFAgentDescription();
+			dfd.setName(getAID());
+			dfd.addServices(sd);
+			try {
+				DFAgentDescription[] dfds = DFService.search(myAgent, dfd);
+				if (dfds.length > 0) {
+					DFService.deregister(myAgent, dfd);
+				}
+				DFService.register(myAgent, dfd);
+			} catch (Exception ex) {
+				System.out.println("Firestation failed registering with DF! Shutting down...");
+				ex.printStackTrace();
+				doDelete();
+			}
+		}
+	}
 	class CountNumberOfVehicles extends OneShotBehaviour {
 
 		/**
@@ -78,7 +113,26 @@ public class FirestationAgent extends Agent {
 		}
 
 	}
+	class InformInterfaceBehaviour extends OneShotBehaviour {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 
+		public InformInterfaceBehaviour(Agent a) {
+			super(a);
+		}
+
+		@Override
+		public void action() {
+			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+			msg.setOntology("info-firestation");
+			msg.setContent("250::250::");
+			msg.addReceiver(new AID("Interface", AID.ISLOCALNAME));
+			myAgent.send(msg);
+		}
+	}
+	
 	class GetResourcesPositions extends OneShotBehaviour {
 
 		/**
@@ -256,7 +310,7 @@ public class FirestationAgent extends Agent {
 
 		public void action() {
 			ACLMessage msg = receive();
-			if (msg == null) {
+			if (msg == null || msg.getOntology() == "info-firestation") {
 				block();
 				return;
 			}

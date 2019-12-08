@@ -3,12 +3,12 @@ package Config;
 
 public abstract class Configurations {
 	
-	public static int GRID_WIDTH = 100;
+	public static int GRID_WIDTH = 500;
 
 	/**
 	 * Defines the World's map/grid height.
 	 */
-	public static int GRID_HEIGHT = 100;
+	public static int GRID_HEIGHT = 500;
 	
 	/**
 	 * Defines the maximum number of Aircrafts that can exist in the World.
@@ -48,7 +48,7 @@ public abstract class Configurations {
 	/**
 	 * Defines the maximum water tank's capacity of an Aircraft Agent.
 	 */
-	public final static int AIRCRAFT_MAX_FUEL_TANK_CAPACITY = 200;
+	public final static int AIRCRAFT_MAX_FUEL_TANK_CAPACITY = 1000;
 	
 	/**
 	 * Defines the maximum water tank's capacity of a Drone Agent.
@@ -59,7 +59,7 @@ public abstract class Configurations {
 	/**
 	 * Defines the maximum FUEL tank's capacity of a Drone Agent.
 	 */
-	public final static int DRONE_MAX_FUEL_TANK_CAPACITY = 100;
+	public final static int DRONE_MAX_FUEL_TANK_CAPACITY = 500;
 	
 	/**
 	 * Defines the maximum water tank's capacity of a Fire Truck Agent.
@@ -69,7 +69,7 @@ public abstract class Configurations {
 	/*
 	 * Fire truck max fuel tank capacity
 	 */
-	public final static int FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY = 250;
+	public final static int FIRE_TRUCK_MAX_FUEL_TANK_CAPACITY = 1250;
 	
 	/*
 	 * Fire truck velocity (timeout (ms) in which it moves to a new coordinate - less is faster)
