@@ -63,7 +63,7 @@ public class MainContainer {
 		}
 
 		a.initMainContainerInPlatform("localhost", "9090", "MainContainer");
-		a.startAgentInPlatform("Interface", "Agents.InterfaceAgent");
+		//a.startAgentInPlatform("Interface", "Agents.InterfaceAgent");
 		
 		// Name of the Agent + Class Path of Agent's source Code
 		
@@ -93,7 +93,7 @@ public class MainContainer {
 		
 		a.startAgentInPlatform("FirestationAgent", "Agents.FirestationAgent");
 		a.startAgentInPlatform("VehiclesAgent", "Agents.VehiclesAgent");
-		
+		a.startAgentInPlatform("Interface", "Agents.InterfaceAgent");
 		
 		try {
 			Thread.sleep(5000);
@@ -104,6 +104,9 @@ public class MainContainer {
 		
 		int counter = 0;
 		while(true) {
+			if (counter > 20 ){
+				break;
+			}
 			String fireName = "FireStarterAgent" + counter;
 			counter++;
 			a.startAgentInPlatform(fireName, "Agents.FireStarterAgent");

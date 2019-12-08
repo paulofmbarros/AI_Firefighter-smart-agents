@@ -91,7 +91,7 @@ public abstract class Configurations {
 	/**
 	 * Defines the default velocity (timeout in ms) in which the vehicle moves to a new coordinate
 	 */
-	public final static int BASE_VEHICLE_SPEED = 1;
+	public final static int BASE_VEHICLE_SPEED = 10;
 
 	public static final int FIRETRUCK_SPEED_MULTIPLIER = 15;
 	

@@ -45,7 +45,7 @@ public class FirestationAgent extends Agent {
 		this.fuelResources = new ArrayList<FuelResource>();
 		// this.firesAwaitingResponse = new HashMap<String, ArrayList<StatusMessage>>();
 		this.numberOfVehicles = 0;
-		SequentialBehaviour sb = new SequentialBehaviour();		
+		SequentialBehaviour sb = new SequentialBehaviour();
 		sb.addSubBehaviour(new RegisterInDF(this));
 		sb.addSubBehaviour(new InformInterfaceBehaviour(this));
 		sb.addSubBehaviour(new CountNumberOfVehicles(this));
@@ -53,8 +53,8 @@ public class FirestationAgent extends Agent {
 		sb.addSubBehaviour(new ReceiveMessages(this));
 		addBehaviour(sb);
 	}
-	class RegisterInDF extends OneShotBehaviour {
 
+	class RegisterInDF extends OneShotBehaviour {
 
 		/**
 		 * 
@@ -87,6 +87,7 @@ public class FirestationAgent extends Agent {
 			}
 		}
 	}
+
 	class CountNumberOfVehicles extends OneShotBehaviour {
 
 		/**
@@ -113,6 +114,7 @@ public class FirestationAgent extends Agent {
 		}
 
 	}
+
 	class InformInterfaceBehaviour extends OneShotBehaviour {
 		/**
 		 * 
@@ -132,7 +134,7 @@ public class FirestationAgent extends Agent {
 			myAgent.send(msg);
 		}
 	}
-	
+
 	class GetResourcesPositions extends OneShotBehaviour {
 
 		/**
@@ -426,14 +428,13 @@ public class FirestationAgent extends Agent {
 
 			needsWater = sm.getWaterTank() <= 0;
 			if (needsWater) {
-				needsFuel = simulateDistance(sm.getCoordX(), sm.getCoordY(), (int) closestWaterResourceToVehicle.getX(),
-						(int) closestWaterResourceToVehicle.getY())
-						+ simulateDistance((int) closestWaterResourceToVehicle.getX(),
-								(int) closestWaterResourceToVehicle.getY(), fm.getFireCoordX(), fm.getFireCoordY()) > sm
-										.getFuelTank();
+				needsFuel = 
+						simulateDistance(sm.getCoordX(), sm.getCoordY(), (int) closestWaterResourceToVehicle.getX(), (int) closestWaterResourceToVehicle.getY())
+						+ simulateDistance((int) closestWaterResourceToVehicle.getX(), (int) closestWaterResourceToVehicle.getY(), fm.getFireCoordX(), fm.getFireCoordY())
+						+ simulateDistance((int) closestFuelResourceToFire.getX(), (int) closestFuelResourceToFire.getY(), fm.getFireCoordX(), fm.getFireCoordY()) > sm.getFuelTank();
 			} else {
 				needsFuel = simulateDistance(sm.getCoordX(), sm.getCoordY(), fm.getFireCoordX(),
-						fm.getFireCoordY()) > sm.getFuelTank();
+						fm.getFireCoordY()) + simulateDistance((int) closestFuelResourceToFire.getX(), (int) closestFuelResourceToFire.getY(), fm.getFireCoordX(), fm.getFireCoordY()) > sm.getFuelTank();
 			}
 
 			int totalDistance = 9999;
@@ -468,9 +469,11 @@ public class FirestationAgent extends Agent {
 					(int) closestFuelResourceToFire.getX(), (int) closestFuelResourceToFire.getY());
 			int fuelInTankAfterFire = sm.getFuelTank() - totalDistance;
 			boolean ableToRefuelAfterFire = fuelInTankAfterFire - distanceToFuelAfterFire >= 0;
-			
-			System.out.println("Vehicle called " + sm.getVehicleName().getLocalName() + " has " + sm.getFuelTank() + "l for a distance of " + totalDistance + 
-					", speed of " + speed + " travel time of " + (speed*totalDistance) + " - able to refuel after fire: " + ableToRefuelAfterFire + " x y coords: " + sm.getCoordX() + "  " + sm.getCoordY());
+
+			System.out.println("Vehicle called " + sm.getVehicleName().getLocalName() + " has " + sm.getFuelTank()
+					+ "l for a distance of " + totalDistance + ", speed of " + speed + " travel time of "
+					+ (speed * totalDistance) + " - able to refuel after fire: " + ableToRefuelAfterFire
+					+ " x y coords: " + sm.getCoordX() + "  " + sm.getCoordY());
 			time = speed * totalDistance;
 			if (ableToRefuelAfterFire && time < bestTime) {
 				bestTime = time;
