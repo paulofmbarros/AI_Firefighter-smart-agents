@@ -395,7 +395,7 @@ public class FirestationAgent extends Agent {
 		FireMessage fm = fireObjects.get(fireId);
 
 		for (StatusMessage sm : statuses) {
-			float speed = 9999;
+			int speed = 9999;
 			double time = 9999;
 			boolean needsWater = false;
 			boolean needsFuel = false;
@@ -413,14 +413,13 @@ public class FirestationAgent extends Agent {
 			closestFuelResourceToFire = getClosest(new Point(fm.getFireCoordX(), fm.getFireCoordY()),
 					WorldObjectEnum.FUEL_RESOURCE);
 
-			if (sm.getVehicleType() == "FIRETRUCK") {
-				speed = Configurations.FIRE_TRUCK_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
-			} else if (sm.getVehicleType() == "DRONE") {
+			if (sm.getVehicleType().equals("FIRETRUCK")) {
+				speed = Configurations.FIRETRUCK_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
+			} else if (sm.getVehicleType().contentEquals("DRONE")) {
 				speed = Configurations.DRONE_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
 			} else {
 				speed = Configurations.AIRCRAFT_SPEED_MULTIPLIER * Configurations.BASE_VEHICLE_SPEED;
 			}
-
 			if (speed == 9999) {
 				System.out.println("Something went wrong fetching vehicle speed. Using default value (9999)");
 			}
@@ -469,7 +468,9 @@ public class FirestationAgent extends Agent {
 					(int) closestFuelResourceToFire.getX(), (int) closestFuelResourceToFire.getY());
 			int fuelInTankAfterFire = sm.getFuelTank() - totalDistance;
 			boolean ableToRefuelAfterFire = fuelInTankAfterFire - distanceToFuelAfterFire >= 0;
-
+			
+			System.out.println("Vehicle called " + sm.getVehicleName().getLocalName() + " has " + sm.getFuelTank() + "l for a distance of " + totalDistance + 
+					", speed of " + speed + " - able to refuel after fire: " + ableToRefuelAfterFire);
 			time = speed * totalDistance;
 			if (ableToRefuelAfterFire && time < bestTime) {
 				bestTime = time;

@@ -2,6 +2,7 @@ package Agents;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Random;
 
 import Classes.FuelResource;
 import Classes.WaterResource;
@@ -23,64 +24,63 @@ public class VehiclesAgent extends Agent {
 	protected int maxWater = 0;
 	protected int maxFuel = 0;
 	protected String localName = "";
-	protected int speed = 0; // delete for real traveling speed (slow and boring!) Configurations.BASE_VEHICLE_SPEED*Configurations.FIRE_TRUCK_SPEED_MULTIPLIER;
-
+	protected int speed = 0; // delete for real traveling speed (slow and boring!)
+								// Configurations.BASE_VEHICLE_SPEED*Configurations.FIRE_TRUCK_SPEED_MULTIPLIER;
+	private Random r = new Random(); //hack estupido para nao spammar a consola com localizacao
 	protected void setup() {
 	}
-	
+
 	class ReceiveMessages extends CyclicBehaviour {
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		
+
 		public ReceiveMessages(Agent a) {
 			super(a);
 		}
 
-		
 		public void action() {
 			ACLMessage msg = receive();
-			if(msg == null) {
+			if (msg == null) {
 				block();
 				return;
 			}
-			
+
 			try {
 				Object content = msg.getContentObject();
-				switch(msg.getPerformative()) {
+				switch (msg.getPerformative()) {
 				case (ACLMessage.INFORM):
-					if(content instanceof FireMessage) {
+					if (content instanceof FireMessage) {
 						FireMessage fm = (FireMessage) content;
-						System.out.println("Fire msg received in vehicle. X: " + fm.getFireCoordX() + " Y: " + fm.getFireCoordY());
+						System.out.println(
+								"Fire msg received in vehicle. X: " + fm.getFireCoordX() + " Y: " + fm.getFireCoordY());
 					}
 					break;
 				default:
 					break;
 				}
-			}
-			catch(Exception e) {
+			} catch (Exception e) {
 				System.out.println(e);
 			}
 		}
-		
+
 	}
-	
+
 	public void travel(int x, int y) {
 		System.out.println("Traveling to " + x + "x, " + y + "y");
-		while(coordX != x || coordY != y) {
-			System.out.println(coordX + "x, " + coordY + "y" + "   --   " + fuelTank + "l fuel, " + waterTank +"l water");
-			if(coordX < x) {
+		while (coordX != x || coordY != y) {
+			System.out.println(
+					coordX + "x, " + coordY + "y" + "   --   " + fuelTank + "l fuel, " + waterTank + "l water");
+			if (coordX < x) {
 				coordX++;
-			}
-			else if(coordX > x) {
+			} else if (coordX > x) {
 				coordX--;
 			}
-			if(coordY < y) {
+			if (coordY < y) {
 				coordY++;
-			}
-			else if(coordY > y) {
+			} else if (coordY > y) {
 				coordY--;
 			}
 			fuelTank--;
@@ -92,13 +92,23 @@ public class VehiclesAgent extends Agent {
 		}
 		System.out.println("Arrived at " + x + "x, " + y + "y");
 	}
-	
-	
-	
+
+	protected void printStats(boolean withDestination, int destX, int destY) {
+		if(!withDestination) {			
+			System.out.println(localName + ": " + coordX + "x, " + coordY + "y" + "   --   " + fuelTank + "l fuel, "
+					+ waterTank + "l water");
+		}
+		else {
+			if(true) {//if(r.nextFloat() < 0.1) {	//hack estupido para nao spammar a consola com localizacao			
+				System.out.println(localName + ": " + coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY + "y "
+						+ " -- " + fuelTank + "l fuel, " + waterTank + "l water");
+			}
+		}
+	}
 
 	public int simulateDistance(int x1, int y1, int x2, int y2) {
 		int moves = 0;
-		while(x1 != x2 || y1 != y2) {
+		while (x1 != x2 || y1 != y2) {
 			if (x1 < x2) {
 				x1++;
 			} else if (x1 > x2) {
@@ -113,7 +123,7 @@ public class VehiclesAgent extends Agent {
 		}
 		return moves;
 	}
-	
+
 	public Point getClosest(Point p, WorldObjectEnum worldObject) {
 		int closestDistance = 100000;
 		int closestIndex = 0;
