@@ -170,7 +170,6 @@ public class WorldAgent extends Agent {
 				msg.addReceiver(new AID("Interface", AID.ISLOCALNAME));
 				myAgent.send(msg);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
