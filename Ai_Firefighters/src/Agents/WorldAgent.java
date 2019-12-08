@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import Agents.FireStarterAgent.StartAFire;
+import Agents.FirestationAgent.CountNumberOfVehicles;
+import Agents.FirestationAgent.ReceiveMessages;
+import Agents.Vehicles_firetruckAgent.CheckCanTravel;
 import Classes.ExtinguishedFire;
 import Classes.Fire;
 import Classes.FuelResource;
@@ -14,6 +18,7 @@ import Enums.WorldObjectEnum;
 import Messages.FireMessage;
 import Messages.OrderMessage;
 import Messages.ResourcesMessage;
+import Messages.StatusMessage;
 import World.WorldObject;
 import jade.core.AID;
 import jade.core.Agent;
@@ -22,10 +27,12 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
+import jade.lang.acl.UnreadableException;
 import java.util.Map;
 import java.awt.Point;
 import java.io.FileReader;
 import java.io.IOException;
+import jade.lang.acl.ACLMessage;
 import jess.Fact;
 import jess.Jesp;
 import jess.JessException;
@@ -69,11 +76,8 @@ public class WorldAgent extends Agent {
 		currentlyActiveFires = new HashMap<Integer, Fire>();
 		this.generateResourcesPositions();
 		SequentialBehaviour sb = new SequentialBehaviour();
-<<<<<<< HEAD
-=======
 		this.jess = new jess.Rete();
 		sb.addSubBehaviour(new InformInterfaceBehaviour(this));
->>>>>>> branch 'master' of https://github.com/Pugnatore/AI_Firefighter-smart-agents.git
 		sb.addSubBehaviour(new ReceiveMessages(this));
 		addBehaviour(sb);
 	}
@@ -265,7 +269,6 @@ public class WorldAgent extends Agent {
 			myAgent.send(msg);
 		}
 	}
-
 
 	/**
 	 * The current type of the Weather Season from the set {Spring, Summer, Autumn

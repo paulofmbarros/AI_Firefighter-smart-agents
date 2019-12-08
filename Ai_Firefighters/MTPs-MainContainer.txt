@@ -1,1 +1,1 @@
-http://DESKTOP-D3BTLMA:7778/acc
+http://DESKTOP-D3BTLMA.lan:7778/acc
