@@ -470,7 +470,7 @@ public class FirestationAgent extends Agent {
 			boolean ableToRefuelAfterFire = fuelInTankAfterFire - distanceToFuelAfterFire >= 0;
 			
 			System.out.println("Vehicle called " + sm.getVehicleName().getLocalName() + " has " + sm.getFuelTank() + "l for a distance of " + totalDistance + 
-					", speed of " + speed + " - able to refuel after fire: " + ableToRefuelAfterFire);
+					", speed of " + speed + " travel time of " + (speed*totalDistance) + " - able to refuel after fire: " + ableToRefuelAfterFire + " x y coords: " + sm.getCoordX() + "  " + sm.getCoordY());
 			time = speed * totalDistance;
 			if (ableToRefuelAfterFire && time < bestTime) {
 				bestTime = time;
