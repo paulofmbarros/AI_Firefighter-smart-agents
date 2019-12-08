@@ -63,6 +63,7 @@ public class MainContainer {
 		}
 
 		a.initMainContainerInPlatform("localhost", "9090", "MainContainer");
+		a.startAgentInPlatform("Interface", "Agents.InterfaceAgent");
 		
 		// Name of the Agent + Class Path of Agent's source Code
 		
@@ -73,6 +74,8 @@ public class MainContainer {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
+		
+		
 		
 		a.startAgentInPlatform("Firetruck1", "Agents.Vehicles_firetruckAgent");
 		a.startAgentInPlatform("Drone1", "Agents.Vehicles_droneAgent");
@@ -90,10 +93,10 @@ public class MainContainer {
 		
 		a.startAgentInPlatform("FirestationAgent", "Agents.FirestationAgent");
 		a.startAgentInPlatform("VehiclesAgent", "Agents.VehiclesAgent");
-		a.startAgentInPlatform("Interface", "Agents.InterfaceAgent");
+		
 		
 		try {
-			Thread.sleep(2000);
+			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -109,6 +112,8 @@ public class MainContainer {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			//remove in production
+			//break;
 		}
 		
 //		a.startAgentInPlatform("FireStarterAgent", "Agents.FireStarterAgent");

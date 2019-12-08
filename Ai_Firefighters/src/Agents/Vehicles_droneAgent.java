@@ -40,7 +40,7 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 		waterTank = maxWater = Configurations.DRONE_MAX_WATER_TANK_CAPACITY; // MUDAR AQUI
 		fuelTank = maxFuel = Configurations.DRONE_MAX_FUEL_TANK_CAPACITY;  // MUDAR AQUI
 				
-		speed=100;
+		speed = (Configurations.BASE_VEHICLE_SPEED * Configurations.DRONE_SPEED_MULTIPLIER); // MUDAR AQUI
 		
 		waterResources = new ArrayList<WaterResource>();
 		fuelResources = new ArrayList<FuelResource>();
@@ -124,8 +124,7 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 			}
 
 			if (order != null) {
-				System.out.println(localName + ": " +
-						coordX + "x, " + coordY + "y" + "   --   " + fuelTank + "l fuel, " + waterTank + "l water");
+				printStats(false, 0,0);
 				if (waterTank <= 0) {
 					if (fuelTank <= simulateDistance(coordX, coordY, 30, 30)
 							+ simulateDistance(30, 30, order.getFireCoordX(), order.getFireCoordY())) {
@@ -155,7 +154,7 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 		protected void onTick() {
 			if (travelingToWater && travelingToFuel) {
 				if (destX != 50 && destY != 50 && tick != 0) {
-					System.out.println(localName + ": Traveling to " + destX + "x, " + destY + "y");
+					printStats(true, destX, destY);
 				}
 				this.destX = 50;
 				this.destY = 50;
@@ -165,7 +164,7 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 				}
 			} else if (travelingToWater) {
 				if (destX != 30 && destY != 30 && tick != 0) {
-					System.out.println(localName + ": Traveling to " + destX + "x, " + destY + "y");
+					printStats(true, destX, destY);
 				}
 				this.destX = 30;
 				this.destY = 30;
@@ -175,7 +174,7 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 				}
 			} else if (travelingToFire) {
 				if (destX != order.getFireCoordX() && destY != order.getFireCoordY() && tick != 0) {
-					System.out.println(localName + ": Traveling to " + destX + "x, " + destY + "y");
+					printStats(true, destX, destY);
 				}
 				this.destX = order.getFireCoordX();
 				this.destY = order.getFireCoordY();
@@ -196,8 +195,7 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 				coordY--;
 			}
 
-			System.out.println(localName + ": " + coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY + "y "
-					+ " -- " + fuelTank + "l fuel, " + waterTank + "l water");
+			printStats(true, destX, destY);
 			if (travelingToFire || travelingToFuel || travelingToWater) {
 				fuelTank--;
 				myAgent.addBehaviour(new InformInterfaceBehaviour(myAgent));
@@ -268,8 +266,7 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 
 			fuelTank--;
 			myAgent.addBehaviour(new InformInterfaceBehaviour(myAgent));
-			System.out.println(localName + ": " + coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY + "y "
-					+ " -- " + fuelTank + "l fuel, " + waterTank + "l water");
+			printStats(true, destX, destY);
 			if (coordX == destX && coordY == destY) {
 
 				if (fetchingFuel && needsWater) {
@@ -278,12 +275,10 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 					closestWaterResource = getClosest(new Point(coordX, coordY), WorldObjectEnum.WATER_RESOURCE);
 					destX = (int) closestWaterResource.getX();
 					destY = (int) closestWaterResource.getY();
-					System.out.println(localName + ": " + coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY
-							+ "y " + " -- " + fuelTank + "l fuel, " + waterTank + "l water");
+					printStats(true, destX, destY);
 				} else if (fetchingFuel && !needsWater) {
 					fuelTank = maxFuel;
-					System.out.println(localName + ": " + coordX + "x, " + coordY + "y" + "   --   " + "dest: " + destX + "x, " + destY
-							+ "y " + " -- " + fuelTank + "l fuel, " + waterTank + "l water");
+					printStats(true, destX, destY);
 					isAvailable = true;
 					
 					Timer t = new Timer();
@@ -428,7 +423,7 @@ public class Vehicles_droneAgent extends VehiclesAgent { // MUDAR AQUI
 		
 		public void action() {
 			ACLMessage msg = receive();
-			if(msg == null  || msg.getOntology() == "info-drone") {
+			if(msg == null || msg.getOntology() == "info-drone") {
 				block();
 				return;
 			}

@@ -29,10 +29,6 @@ public abstract class Configurations {
 	 */
 	public static int NUM_MAX_FIRE_TRUCKS = 1;
 	
-	/**
-	 * Defines the default velocity (timeout in ms) in which the vehicle moves to a new coordinate
-	 */
-	public final static int BASE_VEHICLE_SPEED = 1000;
 	
 	
 	/**
@@ -91,13 +87,18 @@ public abstract class Configurations {
 	 * Defines the maximum final intensity of a Fire.
 	 */
 	public final static int FIRE_MAX_FINAL_INTENSITY = 10;
+	
+	/**
+	 * Defines the default velocity (timeout in ms) in which the vehicle moves to a new coordinate
+	 */
+	public final static int BASE_VEHICLE_SPEED = 1;
 
-	public static final int FIRE_TRUCK_SPEED_MULTIPLIER = 1;
+	public static final int FIRETRUCK_SPEED_MULTIPLIER = 15;
 	
 
-	public static final float DRONE_SPEED_MULTIPLIER = (float) 0.3;
+	public static final int DRONE_SPEED_MULTIPLIER = 5;
 
-	public static final float AIRCRAFT_SPEED_MULTIPLIER = (float) 0.5;
+	public static final int AIRCRAFT_SPEED_MULTIPLIER = 10;
 	
 	
 }
