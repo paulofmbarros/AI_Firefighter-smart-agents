@@ -3,6 +3,7 @@ package Agents;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import Agents.FireStarterAgent.StartAFire;
 import Agents.FirestationAgent.CountNumberOfVehicles;
@@ -21,6 +22,7 @@ import Messages.StatusMessage;
 import World.WorldObject;
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.Behaviour;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
@@ -28,21 +30,47 @@ import jade.lang.acl.ACLMessage;
 import jade.lang.acl.UnreadableException;
 import java.util.Map;
 import java.awt.Point;
+import java.io.FileReader;
 import java.io.IOException;
 import jade.lang.acl.ACLMessage;
 import jess.Fact;
+import jess.Jesp;
+import jess.JessException;
+import Jess.JessBehaviour;
 import jess.RU;
+import jess.Rete;
+import jess.Token;
 import jess.Value;
+import jess.ValueVector;
+
 
 public class WorldAgent extends Agent {
 
 	private jess.Rete jess;
+	public JessBehaviour jessBehaviour=new JessBehaviour(this, "fires.clp");;
+
 
 	protected void setup() {
+        jess = new Rete();
+		try{
+			FileReader fr = new FileReader("fires.clp");
+			Jesp jessParser = new Jesp(fr, jess);
+			try{
+				jessParser.parse(false);
+                jess.reset();
+            }
+			catch(JessException je){
+				je.printStackTrace();
+			}
+		}
+		catch(IOException ioe){
+			ioe.printStackTrace();
+			System.err.println("Error loading jess file!");
+		}
+		
 		currentlyActiveFires = new HashMap<Integer, Fire>();
 		this.generateResourcesPositions();
 		SequentialBehaviour sb = new SequentialBehaviour();
-		this.jess = new jess.Rete();
 		sb.addSubBehaviour(new ReceiveMessages(this));
 		addBehaviour(sb);
 	}
@@ -61,25 +89,57 @@ public class WorldAgent extends Agent {
 		boolean newMsg(ACLMessage msg) {
 			try {
 				String sender = msg.getSender().getLocalName();
-				System.out.println("!!!!!!!!!!!!!!!!!!!!!!PAAASSSOOOOUUUUU AAAAQUUUUIIIIIII!!!!!!!!!!!!!!!!!!!!!!!!!!");
+				
 
 				Object content = msg.getContentObject();
 				FireMessage fm = (FireMessage) content;
 				String fireId = fm.getFireId();
 				int posX = fm.getFireCoordX();
 				int posY = fm.getFireCoordY();
-				Fact f = new Fact("Fire", jess);
-				f.setSlotValue("sender", new Value(sender, RU.STRING));
-				f.setSlotValue("fireId", new Value(fireId, RU.INTEGER));
-				f.setSlotValue("posX", new Value(posX, RU.INTEGER));
-				f.setSlotValue("posY", new Value(posY, RU.INTEGER));
-				jess.assertFact(f);
-				return true;
+				String fact=buildFireFact(sender, fireId, posX,posY);
+		        jessBehaviour.addFact(fact);
+		        System.out.println("FACT ADDED WITH SUCCESS");
+		        return true;
+
+				
 			} catch (Exception ex) {
 				return false;
 			}
 
 		}
+		
+		
+		//--------------------------------------JESS METHODS----------------------------------------------------------
+		 private String buildFireFact(String sender, String fireId, int posX, int posY) {
+		        return "(fire (sender "  + sender + ") (fireId " + fireId + ") (posX " + posX + ") (posY " + posY + ") (isActive true)  )";
+		  }
+		 
+		 private void cleanUpFire(OrderMessage msg) {
+		        System.out.println("Cleaning fire FACT: " + msg.getFireId());
+		        jessBehaviour.addFact("( clean-up ( fireId " + msg.getFireId() + " ) )");
+		    }
+		 private void getActiveFires() {
+		        try{
+		        Iterator it = jessBehaviour.runQuery("get-fires", new ValueVector());
+		        if(it != null){
+		            while(it.hasNext()){
+		                Token t = (Token) it.next();
+		                Fact f =  t.fact(1);
+		                String fireId = f.getSlotValue("fireId").atomValue(null);
+		                boolean isActive = Boolean.parseBoolean(f.getSlotValue("isActive").symbolValue(null));
+		               
+
+		           }
+		        }
+		      
+		        }catch (JessException je){
+		            je.printStackTrace();
+		        }
+		    }
+		 
+		 
+		 
+		//-------------------------------------- END JESS METHODS----------------------------------------------------------
 
 		public void action() {
 			ACLMessage msg = receive();
@@ -116,6 +176,8 @@ public class WorldAgent extends Agent {
 						OrderMessage om = (OrderMessage) content;
 						int x = getNumCurrentlyActiveFires();
 						if (getNumCurrentlyActiveFires() > 0) {
+							cleanUpFire(om);
+							//getActiveFires();
 							removeFire(om.getFireCoordX(), om.getFireCoordY());
 						} else {
 							System.out.println("Todos os fogos já se encontram extintos");
