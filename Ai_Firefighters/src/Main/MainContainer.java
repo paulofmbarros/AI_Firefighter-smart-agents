@@ -104,7 +104,7 @@ public class MainContainer {
 		
 		int counter = 0;
 		while(true) {
-			if (counter > 20 ){
+			if (counter > 50 ){
 				break;
 			}
 			String fireName = "FireStarterAgent" + counter;

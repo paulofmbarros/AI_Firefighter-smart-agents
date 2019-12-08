@@ -78,7 +78,7 @@ public class WorldAgent extends Agent {
 		this.generateResourcesPositions();
 		SequentialBehaviour sb = new SequentialBehaviour();
 		this.jess = new jess.Rete();
-		addBehaviour(new InformFiresInterface(this, 120000));
+		addBehaviour(new InformFiresInterface(this, 2000));
 		sb.addSubBehaviour(new InformInterfaceBehaviour(this));
 		sb.addSubBehaviour(new ReceiveMessages(this));
 		addBehaviour(sb);

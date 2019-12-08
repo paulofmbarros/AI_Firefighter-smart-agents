@@ -95,7 +95,6 @@ public abstract class Configurations {
 
 	public static final int FIRETRUCK_SPEED_MULTIPLIER = 15;
 	
-
 	public static final int DRONE_SPEED_MULTIPLIER = 5;
 
 	public static final int AIRCRAFT_SPEED_MULTIPLIER = 10;

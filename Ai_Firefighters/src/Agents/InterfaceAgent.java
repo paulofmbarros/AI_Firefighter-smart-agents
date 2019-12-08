@@ -307,21 +307,23 @@ public class InterfaceAgent extends Agent{
 
 			if(msg != null) {
 				try {
-					System.out.println("CLEANUP BEHAVIOUR CALLED!!");
 					HashMap<Integer, Fire> firesInWorld = (HashMap<Integer, Fire>) msg.getContentObject();
 					//Point pp = new Point(1,1);
 					//Fire test = new Fire(1234, new WorldObject(WorldObjectEnum.FIRE, pp));
 					//firesInWorld.put(1234, test);
 					ArrayList<Point> firesInWorldList = new ArrayList<Point>();
-					ArrayList<Point> firesInInterfaceList = new ArrayList<Point>(firesGUI.values());				
+					ArrayList<Point> firesInInterfaceList = new ArrayList<Point>(firesGUI.values());	
+					
 					for(Fire f : firesInWorld.values()) {
 						firesInWorldList.add(new Point(f.getWorldObject().getPositionX(), f.getWorldObject().getPositionY()));
 					}
 					
 					firesInInterfaceList.removeAll(firesInWorldList);
+					
 					for(Point p : firesInInterfaceList) {
 						firesGUI.values().removeAll(Collections.singleton(p));
 					}
+
 					
 				} catch (UnreadableException e) {
 					e.printStackTrace();
