@@ -77,9 +77,9 @@ public class MainContainer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		a.startAgentInPlatform("FirestationAgent", "Agents.FirestationAgent");
 		a.startAgentInPlatform("VehiclesAgent", "Agents.VehiclesAgent");
+		a.startAgentInPlatform("Interface", "Agents.InterfaceAgent");
 		
 		try {
 			Thread.sleep(2000);
@@ -87,6 +87,7 @@ public class MainContainer {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		
 		a.startAgentInPlatform("FireStarterAgent", "Agents.FireStarterAgent");
 		a.startAgentInPlatform("FireStarterAgent2", "Agents.FireStarterAgent");

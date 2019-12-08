@@ -1,14 +1,8 @@
 package Agents;
 
-import java.awt.Point;
 import java.io.IOException;
 import java.security.SecureRandom;
-import java.util.Map;
-
-import Classes.Fire;
-import Enums.WorldObjectEnum;
 import Messages.FireMessage;
-import World.WorldObject;
 import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.OneShotBehaviour;
@@ -26,8 +20,9 @@ public class FireStarterAgent  extends Agent{
 	public WorldAgent worldAgent;
 	
 	protected void setup() {
-		this.fireCoordX = new SecureRandom().nextInt(101);
-		this.fireCoordY = new SecureRandom().nextInt(101);
+		this.fireCoordX = new SecureRandom().nextInt(500);
+		this.fireCoordY = new SecureRandom().nextInt(500);
+		addBehaviour(new InformInterfaceBehaviour(this));
 		addBehaviour( new StartAFire(this));
 	}
 	
@@ -53,6 +48,7 @@ public class FireStarterAgent  extends Agent{
 			//enviar info ao world a dizer onde foi posto o fogo
 			//TODO
 			//enviar info ao quartel
+			myAgent.addBehaviour(new InformInterfaceBehaviour(myAgent));
 			FireMessage fm = new FireMessage(fireCoordX, fireCoordY);
 			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 			try {
@@ -74,5 +70,25 @@ public class FireStarterAgent  extends Agent{
 			doDelete();
 		}
 		
+	}
+	
+	class InformInterfaceBehaviour extends OneShotBehaviour {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public InformInterfaceBehaviour(Agent a) {
+			super(a);
+		}
+
+		@Override
+		public void action() {
+			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+			msg.setOntology("info-fire");
+			msg.setContent(fireCoordX + "::" + fireCoordY +"::");
+			msg.addReceiver(new AID("Interface", AID.ISLOCALNAME));
+			myAgent.send(msg);
+		}
 	}
 }

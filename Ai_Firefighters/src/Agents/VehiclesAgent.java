@@ -1,17 +1,14 @@
 package Agents;
 
 import java.awt.Point;
-import java.security.SecureRandom;
 import java.util.ArrayList;
 
 import Classes.FuelResource;
 import Classes.WaterResource;
-import Config.Configurations;
 import Enums.WorldObjectEnum;
 import Messages.FireMessage;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
-import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
 
 public class VehiclesAgent extends Agent {

@@ -4,10 +4,6 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import Agents.FireStarterAgent.StartAFire;
-import Agents.FirestationAgent.CountNumberOfVehicles;
-import Agents.FirestationAgent.ReceiveMessages;
-import Agents.Vehicles_firetruckAgent.CheckCanTravel;
 import Classes.ExtinguishedFire;
 import Classes.Fire;
 import Classes.FuelResource;
@@ -17,7 +13,6 @@ import Enums.WorldObjectEnum;
 import Messages.FireMessage;
 import Messages.OrderMessage;
 import Messages.ResourcesMessage;
-import Messages.StatusMessage;
 import World.WorldObject;
 import jade.core.AID;
 import jade.core.Agent;
@@ -25,16 +20,19 @@ import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.OneShotBehaviour;
 import jade.core.behaviours.SequentialBehaviour;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.UnreadableException;
 import java.util.Map;
 import java.awt.Point;
 import java.io.IOException;
-import jade.lang.acl.ACLMessage;
 import jess.Fact;
 import jess.RU;
 import jess.Value;
 
 public class WorldAgent extends Agent {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	private jess.Rete jess;
 
@@ -43,10 +41,11 @@ public class WorldAgent extends Agent {
 		this.generateResourcesPositions();
 		SequentialBehaviour sb = new SequentialBehaviour();
 		this.jess = new jess.Rete();
+		sb.addSubBehaviour(new InformInterfaceBehaviour(this));
 		sb.addSubBehaviour(new ReceiveMessages(this));
 		addBehaviour(sb);
 	}
-
+	
 	class ReceiveMessages extends CyclicBehaviour {
 
 		/**
@@ -83,7 +82,7 @@ public class WorldAgent extends Agent {
 
 		public void action() {
 			ACLMessage msg = receive();
-			if (msg == null) {
+			if (msg == null || msg.getOntology() == "info-resources" || msg.getOntology() == "info-extinguishedFire") {
 				block();
 				return;
 			}
@@ -114,7 +113,7 @@ public class WorldAgent extends Agent {
 				case (ACLMessage.CONFIRM):
 					if (content instanceof OrderMessage) {
 						OrderMessage om = (OrderMessage) content;
-						int x = getNumCurrentlyActiveFires();
+						//int x = getNumCurrentlyActiveFires();
 						if (getNumCurrentlyActiveFires() > 0) {
 							removeFire(om.getFireCoordX(), om.getFireCoordY());
 						} else {
@@ -147,6 +146,61 @@ public class WorldAgent extends Agent {
 			}
 		}
 	}
+	
+	class InformInterfaceBehaviour extends OneShotBehaviour {
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public InformInterfaceBehaviour(Agent a) {
+			super(a);
+		}
+		@Override
+		public void action() {
+			try {
+				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+				msg.setOntology("info-resources");
+				ArrayList<WaterResource> waterResource = new ArrayList<WaterResource> (waterResources);
+				waterResource.remove(waterResource.size() - 1);
+				ArrayList<FuelResource> fuelResource = new ArrayList<FuelResource>(fuelResources);
+				fuelResource.remove(fuelResource.size() - 1);
+				ResourcesMessage rm = new ResourcesMessage(waterResource, fuelResource);
+				msg.setContentObject(rm);
+				msg.addReceiver(new AID("Interface", AID.ISLOCALNAME));
+				myAgent.send(msg);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+	
+	class extinguishedFireInteface extends OneShotBehaviour {
+
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private int cordX, cordY;
+		
+		public extinguishedFireInteface(Agent a, int x, int y) {
+			super(a);
+			this.cordX=x;
+			this.cordY=y;
+		}
+
+		public void action() {
+			ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
+			msg.setOntology("info-extinguishedFire");
+			msg.setContent(cordX + "::" + cordY +"::");
+			msg.addReceiver(new AID("Interface", AID.ISLOCALNAME));
+			myAgent.send(msg);
+		}
+	}
+
 
 	/**
 	 * The current type of the Weather Season from the set {Spring, Summer, Autumn
@@ -246,27 +300,27 @@ public class WorldAgent extends Agent {
 		fuelResources = new ArrayList<FuelResource>();
 
 		// Water Resources
-		Point p0 = new Point(new SecureRandom().nextInt(50), new SecureRandom().nextInt(50));
+		Point p0 = new Point(new SecureRandom().nextInt(250), new SecureRandom().nextInt(250));
 		WorldObject wo0 = new WorldObject(WorldObjectEnum.WATER_RESOURCE, p0);
 		WaterResource wr0 = new WaterResource((byte) 0, wo0);
 		this.worldMap[(int) p0.getX()][(int) p0.getY()] = wr0;
 
-		Point p1 = new Point(new SecureRandom().nextInt(50), new SecureRandom().nextInt(100 - 50) + 50);
+		Point p1 = new Point(new SecureRandom().nextInt(250), new SecureRandom().nextInt(500 - 250) + 250);
 		WorldObject wo1 = new WorldObject(WorldObjectEnum.WATER_RESOURCE, p1);
 		WaterResource wr1 = new WaterResource((byte) 1, wo1);
 		this.worldMap[(int) p1.getX()][(int) p1.getY()] = wr1;
 
-		Point p2 = new Point(new SecureRandom().nextInt(100 - 50) + 50, new SecureRandom().nextInt(50));
+		Point p2 = new Point(new SecureRandom().nextInt(500 - 250) + 250, new SecureRandom().nextInt(250));
 		WorldObject wo2 = new WorldObject(WorldObjectEnum.WATER_RESOURCE, p2);
 		WaterResource wr2 = new WaterResource((byte) 2, wo2);
 		this.worldMap[(int) p2.getX()][(int) p2.getY()] = wr2;
 
-		Point p3 = new Point(new SecureRandom().nextInt(100 - 50) + 50, new SecureRandom().nextInt(100 - 50) + 50);
+		Point p3 = new Point(new SecureRandom().nextInt(500 - 250) + 250, new SecureRandom().nextInt(500 - 250) + 250);
 		WorldObject wo3 = new WorldObject(WorldObjectEnum.WATER_RESOURCE, p3);
 		WaterResource wr3 = new WaterResource((byte) 3, wo3);
 		this.worldMap[(int) p3.getX()][(int) p3.getY()] = wr3;
 
-		Point p4 = new Point(50, 50);
+		Point p4 = new Point(250, 250);
 		WorldObject wo4 = new WorldObject(WorldObjectEnum.WATER_RESOURCE, p4);
 		WaterResource wr4 = new WaterResource((byte) 4, wo4);
 		this.worldMap[(int) p4.getX()][(int) p4.getY()] = wr4;
@@ -278,27 +332,27 @@ public class WorldAgent extends Agent {
 		waterResources.add(wr4);
 
 		// Fuel Resources
-		Point p5 = new Point(new SecureRandom().nextInt(50), new SecureRandom().nextInt(50));
+		Point p5 = new Point(new SecureRandom().nextInt(250), new SecureRandom().nextInt(250));
 		WorldObject wo5 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE, p5);
 		FuelResource fr0 = new FuelResource((byte) 0, wo5);
 		this.worldMap[(int) p5.getX()][(int) p5.getY()] = fr0;
 
-		Point p6 = new Point(new SecureRandom().nextInt(50), new SecureRandom().nextInt(100 - 50) + 50);
+		Point p6 = new Point(new SecureRandom().nextInt(250), new SecureRandom().nextInt(500 - 250) + 250);
 		WorldObject wo6 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE, p6);
 		FuelResource fr1 = new FuelResource((byte) 1, wo6);
 		this.worldMap[(int) p6.getX()][(int) p6.getY()] = fr1;
 
-		Point p7 = new Point(new SecureRandom().nextInt(100 - 50) + 50, new SecureRandom().nextInt(50));
+		Point p7 = new Point(new SecureRandom().nextInt(500 - 250) + 250, new SecureRandom().nextInt(250));
 		WorldObject wo7 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE, p7);
 		FuelResource fr2 = new FuelResource((byte) 2, wo7);
 		this.worldMap[(int) p7.getX()][(int) p7.getY()] = fr2;
 
-		Point p8 = new Point(new SecureRandom().nextInt(100 - 50) + 50, new SecureRandom().nextInt(100 - 50) + 50);
+		Point p8 = new Point(new SecureRandom().nextInt(500 - 250) + 250, new SecureRandom().nextInt(500 - 250) + 250);
 		WorldObject wo8 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE, p8);
 		FuelResource fr3 = new FuelResource((byte) 3, wo8);
 		this.worldMap[(int) p8.getX()][(int) p8.getY()] = fr3;
 
-		Point p9 = new Point(50, 50);
+		Point p9 = new Point(250, 250);
 		WorldObject wo9 = new WorldObject(WorldObjectEnum.FUEL_RESOURCE, p9);
 		FuelResource fr4 = new FuelResource((byte) 4, wo9);
 		this.worldMap[(int) p9.getX()][(int) p9.getY()] = fr4;
@@ -308,7 +362,6 @@ public class WorldAgent extends Agent {
 		fuelResources.add(fr2);
 		fuelResources.add(fr3);
 		fuelResources.add(fr4);
-
 	}
 
 	public ArrayList<WaterResource> getWaterResources() {
@@ -485,10 +538,10 @@ public class WorldAgent extends Agent {
 
 				// Remove the Fire to the World's map/grid, changing its position/point to null
 				this.worldMap[firePositionX][firePositionY] = null;
-
+				this.addBehaviour(new extinguishedFireInteface(this,firePositionX,firePositionY));
 				// Remove the Fire from the Currently Active Fires
 				this.currentlyActiveFires.remove(fireToBeExtinguished.getID());
-
+				
 				ExtinguishedFire extinguishedFire = new ExtinguishedFire(fireToBeExtinguished);
 
 				// Add the Fire to the Extinguished Fires
