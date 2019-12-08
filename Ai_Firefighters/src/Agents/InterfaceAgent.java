@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -29,7 +30,8 @@ public class InterfaceAgent extends Agent{
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private HashMap<AID, Point> fireStationGUI, aircraftsGUI,dronesGUI,firetrucksGUI,firesGUI;
+	private ConcurrentHashMap<AID, Point> fireStationGUI, aircraftsGUI,dronesGUI,firetrucksGUI,firesGUI;
+	//private HashMap<AID, Point> fireStationGUI, aircraftsGUI,dronesGUI,firetrucksGUI,firesGUI;
 	ArrayList<WaterResource> waterResources = new ArrayList<WaterResource>();
 	ArrayList<FuelResource> fuelResources = new ArrayList<FuelResource>();
 	private Draw draw;
@@ -38,11 +40,11 @@ public class InterfaceAgent extends Agent{
 	@Override
 	protected void setup() {
 		
-		fireStationGUI = new HashMap<>();
-		aircraftsGUI = new HashMap<>();
-		dronesGUI = new HashMap<>();
-		firetrucksGUI = new HashMap<>();
-		firesGUI = new HashMap<>();
+		fireStationGUI = new ConcurrentHashMap<>();
+		aircraftsGUI = new ConcurrentHashMap<>();
+		dronesGUI = new ConcurrentHashMap<>();
+		firetrucksGUI = new ConcurrentHashMap<>();
+		firesGUI = new ConcurrentHashMap<>();
 
 		frame = new JFrame();
 		draw = new Draw(fireStationGUI, aircraftsGUI,dronesGUI,firetrucksGUI,firesGUI);
@@ -138,10 +140,10 @@ public class InterfaceAgent extends Agent{
 				for (HashMap.Entry<AID, Point> entry : firesGUI.entrySet()) {
 					if((int) entry.getValue().getX() == x && (int) entry.getValue().getY() == y) {
 						fire=entry.getKey();
+						firesGUI.remove(fire);
 					}
 				}
 				
-				firesGUI.remove(fire);
 			}else 
 				block();
 		}
@@ -293,9 +295,9 @@ class Draw extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private static final int D_W = 600;
 	private static final int D_H = 600;
-	private HashMap<AID, Point> fireStation, aircrafts, drones, firetrucks, fires;
+	private ConcurrentHashMap<AID, Point> fireStation, aircrafts, drones, firetrucks, fires;
 
-	public Draw(HashMap<AID, Point> fireStation, HashMap<AID, Point> aircrafts, HashMap<AID, Point> drones,HashMap<AID, Point> firetrucks, HashMap<AID, Point> fires) {
+	public Draw(ConcurrentHashMap<AID, Point> fireStation, ConcurrentHashMap<AID, Point> aircrafts, ConcurrentHashMap<AID, Point> drones,ConcurrentHashMap<AID, Point> firetrucks, ConcurrentHashMap<AID, Point> fires) {
 		this.fireStation = fireStation;
 		this.aircrafts = aircrafts;
 		this.drones = drones;
